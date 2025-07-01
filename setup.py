@@ -13,11 +13,11 @@ def authenticate():
         st.session_state.authenticated = False
 
     if not st.session_state.authenticated:
-        pw = st.sidebar.text_input("🔒 Enter password", type="password")
+        pw = st.text_input("🔒 Enter password", type="password")
         if pw == st.secrets["math_tutor"]["tutor_pw"]:
             st.session_state.authenticated = True
             st.success("Access granted.")
-            st.experimental_rerun()
+            st.rerun()
         elif pw:
             st.sidebar.error("Incorrect password.")
         st.stop()
