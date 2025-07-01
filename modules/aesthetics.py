@@ -107,7 +107,7 @@ def show_weekly_quote():
 
     # 2) load & compute weakest sub-items each week —
     topics = pd.read_csv(TOPICS_FILE)
-    levels = pd.read_csv(LEVELS_FILE)
+    levels = pd.read_csv(SCORES_FILE)
     df_lv = topics.merge(levels, on="sub_item", how="left")
     weakest = df_lv.nsmallest(3, "level")
     weak_lines = [f"- {r['sub_item']} ({r['core_topic']}): L{r['level']}/7"
@@ -132,11 +132,13 @@ def show_weekly_quote():
     countdown_upcoming = "📅 Important Countdowns"
 
     # 3) Render in two columns
-    col1, col2 = st.columns([0.58, 0.42])
+    col1, col2, col3 = st.columns([0.45, 0.22, 0.33])
     with col1:
         display_box(f"💡 Week {week} Quote")
         st.info(quote_text)
     with col2:
+        st.info(weakest_text)
+    with col3:
         display_box(countdown_upcoming)
         st.markdown(f":red-background[• {lines[0]}]")
         st.markdown(f":green-background[• {lines[1]}]")
