@@ -23,7 +23,7 @@ def display_box(content, theme: str = "blue"):
         <div style="
             background-color: {s["bg"]};
             color: {s["fg"]};
-            font-size: 24px;
+            font-size: 20px;
             border-radius: 8px;
             padding: 0.5em 1em;
             margin-bottom: 0.5em;
@@ -163,7 +163,7 @@ def show_weekly_quote():
         display_box(f"💡 Week {week} Quote", theme="blue")
         st.info(quote_text)
     with col2:
-        display_box(f"🔴 Three weakest sub-items", theme="red")
+        display_box(f"🔴 Weakest sub-items", theme="red")
         st.info(weakest_text)
     with col3:
         display_box(countdown_upcoming, theme="green")
