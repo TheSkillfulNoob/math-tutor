@@ -6,6 +6,7 @@ from modules import paper_system, aesthetics, docs_display
 
 # Pull your entire config namespace directly:
 cfg = st.secrets["math_tutor"]
+g_auth = st.secrets["auth"]
 
 configure_page()
 role = authenticate()
@@ -15,7 +16,7 @@ aesthetics.show_weekly_quote()
 
 tab1, tab2, tab3 = st.tabs(["Exercises", "Progress", "Docs"])
 with tab1:
-    paper_system.render(role, cfg)
+    paper_system.render(role, g_auth)
 with tab2:
     levels = load_levels(cfg["levels_csv"])
     aesthetics.render_progress(levels)

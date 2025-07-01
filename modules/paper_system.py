@@ -6,9 +6,12 @@ from google.oauth2.service_account import Credentials
 def init_gsheets(config):
     scopes = ["https://www.googleapis.com/auth/spreadsheets",
               "https://www.googleapis.com/auth/drive"]
-    creds = Credentials.from_service_account_file("path/to/creds.json", scopes=scopes)
+    creds = Credentials.from_service_account_info(
+        st.secrets["gcp_service_account"], 
+        scopes=scopes
+    )
     client = gspread.authorize(creds)
-    sheet = client.open_by_key(config['gsheet_id']).sheet1
+    sheet = client.open("v4_resources").worksheet("math-tutee-todo") #Change later
     return sheet
 
 def render(role, config):
