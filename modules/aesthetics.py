@@ -106,7 +106,7 @@ def show_weekly_quote():
     quote_text = f"“{quote}”\n\n— {author}"
 
     # 2) load & compute weakest sub-items each week —
-    BREAKDOWN_FILE = "data/topics‐breakdown.csv"
+    BREAKDOWN_FILE = "data/topics-breakdown.csv"
     df_lv = pd.read_csv(BREAKDOWN_FILE)
 
     # 2) (Optional) if you haven’t already, map numeric index→topic name
@@ -121,7 +121,7 @@ def show_weekly_quote():
         f"- {r['sub_item']} ({r['core_topic']}): Level {r['level']}/7"
         for _, r in weakest.iterrows()
     ]
-    weakest_text = "🔴 Three weakest sub‐items\n\n" + "\n".join(weak_lines)
+    weakest_text = "🔴 Three weakest sub-items\n\n" + "\n".join(weak_lines)
     
     # 3) Compute countdowns
     today = date.today()
