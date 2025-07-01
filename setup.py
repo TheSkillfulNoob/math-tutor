@@ -14,7 +14,7 @@ def authenticate():
 
     if not st.session_state.authenticated:
         pw = st.sidebar.text_input("🔒 Enter password", type="password")
-        if pw == st.secrets["auth"]["tutor_pw"]:
+        if pw == st.secrets["math_tutor"]["tutor_pw"]:
             st.session_state.authenticated = True
             st.success("Access granted.")
             st.experimental_rerun()
