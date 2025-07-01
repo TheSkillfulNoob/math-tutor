@@ -19,14 +19,14 @@ def show_weekly_quote():
     row = df.iloc[week % len(df)]
     quote = row["quote"]
     author = row.get("author", "")
-    quote_text = f"“{quote}”\n\n— {author}"
+    quote_text = f"💡 Week {week} Quote\n\n“{quote}”\n\n— {author}"
 
     # 2) Compute countdowns
     today = date.today()
     exam_dates = {
         "First Compulsory (9 Apr 2026)": date(2026, 4, 9),
         "Math Exam (13 Apr 2026)":    date(2026, 4, 13),
-        "Results Release (15 Jul 2026)": date(2026, 7, 15),
+        "Last Subject (Econ, 4 May 2026)": date(2026, 5, 4),
     }
     lines = []
     for label, dt in exam_dates.items():
@@ -36,7 +36,7 @@ def show_weekly_quote():
         else:
             lines.append(f"**{label}**: 🏁 done")
 
-    countdown_text = "📅 Upcoming\n\n" + "\n\n".join(lines)
+    countdown_upcoming = "📅 Upcoming"
 
     # 3) Render in two columns
     col1, col2 = st.columns([0.58, 0.42])
@@ -44,7 +44,10 @@ def show_weekly_quote():
         display_box(f"💡 Week {week} Quote")
         st.info(quote_text)
     with col2:
-        st.info(countdown_text)
+        display_box(countdown_upcoming)
+        st.markdown(f":red-background[{lines[0]}]")
+        st.markdown(f":purple-background[{lines[1]}]")
+        st.markdown(f":rainbow-background[{lines[2]}]")
 
 
 def render_progress(config):
