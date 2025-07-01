@@ -8,7 +8,7 @@ QUOTES_FILE = "data/quotes.csv"
 
 def display_box(content):
     st.markdown(
-        f'<p style="background-color:#0066cc;color:#33ff33;font-size:24px;border-radius:2%;">{content}</p>',
+        f'<p style="background-color:#0066cc;color:#CCE5FF;font-size:24px;border-radius:2%;">{content}</p>',
         unsafe_allow_html=True)
 
 def show_weekly_quote():
@@ -19,7 +19,7 @@ def show_weekly_quote():
     row = df.iloc[week % len(df)]
     quote = row["quote"]
     author = row.get("author", "")
-    quote_text = f"💡 Week {week} Quote\n\n“{quote}”\n\n— {author}"
+    quote_text = f"“{quote}”\n\n— {author}"
 
     # 2) Compute countdowns
     today = date.today()
@@ -41,9 +41,10 @@ def show_weekly_quote():
     # 3) Render in two columns
     col1, col2 = st.columns([0.58, 0.42])
     with col1:
+        display_box(f"💡 Week {week} Quote")
         st.info(quote_text)
     with col2:
-        display_box(countdown_text)
+        st.info(countdown_text)
 
 
 def render_progress(config):
