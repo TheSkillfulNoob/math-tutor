@@ -3,7 +3,7 @@ import pandas as pd
 import random
 
 # motivational quotes stored in a CSV
-QUOTES_FILE = "quotes.csv"
+QUOTES_FILE = "../data/quotes.csv"
 
 
 def show_weekly_quote():

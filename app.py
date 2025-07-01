@@ -11,7 +11,7 @@ configure_page()
 authenticate()
 
 # show weekly quote
-aesthetics.show_weekly_quote("data/quotes.csv")
+aesthetics.show_weekly_quote()
 
 tab1, tab2, tab3 = st.tabs(["Exercises", "Progress", "Docs"])
 with tab1:
