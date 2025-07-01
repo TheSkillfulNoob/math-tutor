@@ -118,7 +118,7 @@ def show_weekly_quote():
 
     # 4) Format into your info box
     weak_lines = [
-        f"- {r['sub_item']} ({r['core_topic']}): Level {r['rate']}/7"
+        f"- {r['topic']}/({r['core_topic']}): Level {r['rate']}/7"
         for _, r in weakest.iterrows()
     ]
     weakest_text = "🔴 Three weakest sub-items\n\n" + "\n".join(weak_lines)
