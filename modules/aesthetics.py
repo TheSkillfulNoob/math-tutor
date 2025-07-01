@@ -8,10 +8,31 @@ QUOTES_FILE = "data/quotes.csv"
 SCORES_FILE = "data/scores.csv"
 TOPICS_FILE = "data/topics-breakdown.csv"
 
-def display_box(content):
+def display_box(content, theme: str = "blue"):
+    # define bg/text pairs for each theme
+    styles = {
+        "blue":  {"bg": "#0066cc", "fg": "#CCE5FF"},
+        "red":   {"bg": "#cc0000", "fg": "#FFCCCC"},
+        "green": {"bg": "#28a745", "fg": "#D4EDDA"},
+    }
+    # fallback to blue if unknown
+    s = styles.get(theme, styles["blue"])
+
     st.markdown(
-        f'<p style="background-color:#0066cc;color:#CCE5FF;font-size:24px;border-radius:2%;">{content}</p>',
-        unsafe_allow_html=True)
+        f'''
+        <div style="
+            background-color: {s["bg"]};
+            color: {s["fg"]};
+            font-size: 24px;
+            border-radius: 8px;
+            padding: 0.5em 1em;
+            margin-bottom: 0.5em;
+        ">
+            {content}
+        </div>
+        ''',
+        unsafe_allow_html=True
+    )
 
 import altair as alt
 
@@ -109,46 +130,43 @@ def show_weekly_quote():
     BREAKDOWN_FILE = "data/topics-breakdown.csv"
     df_lv = pd.read_csv(BREAKDOWN_FILE)
 
-    # 2) (Optional) if you haven’t already, map numeric index→topic name
-    #    using the same TOPIC_MAP you used in your progress chart
-    df_lv["core_topic"] = df_lv["index"].map(TOPIC_MAP)
-
     # 3) Find the 3 weakest sub‐items
     weakest = df_lv.nsmallest(3, "rate")
 
     # 4) Format into your info box
     weak_lines = [
-        f"- {r['topic']}/({r['core_topic']}): Level {r['rate']}/7"
+        f"- {r['topic']}({r['index']}): Level {r['rate']}/7"
         for _, r in weakest.iterrows()
     ]
-    weakest_text = "🔴 Three weakest sub-items\n\n" + "\n".join(weak_lines)
+    weakest_text = "\n".join(weak_lines)
     
     # 3) Compute countdowns
     today = date.today()
     exam_dates = {
-        "First Compulsory (9 Apr 2026)": date(2026, 4, 9),
-        "Math Exam (13 Apr 2026)":    date(2026, 4, 13),
-        "Last Subject (Econ, 4 May 2026)": date(2026, 5, 4),
+        "First Compulsory (9 Apr '26)": date(2026, 4, 9),
+        "Math Exam (13 Apr '26)":    date(2026, 4, 13),
+        "Last Subject (Bio, 20 Apr '26)": date(2026, 4, 20),
     }
     lines = []
     for label, dt in exam_dates.items():
         days = (dt - today).days
         if days >= 0:
-            lines.append(f"**{label}**: {days} days to go")
+            lines.append(f"**{label}**: {days} days")
         else:
             lines.append(f"**{label}**: 🏁 done")
 
     countdown_upcoming = "📅 Important Countdowns"
 
     # 3) Render in two columns
-    col1, col2, col3 = st.columns([0.45, 0.22, 0.33])
+    col1, col2, col3 = st.columns([0.3, 0.35, 0.35])
     with col1:
-        display_box(f"💡 Week {week} Quote")
+        display_box(f"💡 Week {week} Quote", theme="blue")
         st.info(quote_text)
     with col2:
+        display_box(f"🔴 Three weakest sub-items", theme="red")
         st.info(weakest_text)
     with col3:
-        display_box(countdown_upcoming)
+        display_box(countdown_upcoming, theme="green")
         st.markdown(f":red-background[• {lines[0]}]")
         st.markdown(f":green-background[• {lines[1]}]")
         st.markdown(f":rainbow-background[• {lines[2]}]")
