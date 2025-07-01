@@ -8,14 +8,14 @@ from modules import paper_system, aesthetics, docs_display
 cfg = st.secrets["math_tutor"]
 
 configure_page()
-authenticate()
+role = authenticate()
 
 # show weekly quote
 aesthetics.show_weekly_quote()
 
 tab1, tab2, tab3 = st.tabs(["Exercises", "Progress", "Docs"])
 with tab1:
-    paper_system.render(cfg, fetch_records, push_dataframe)
+    paper_system.render(role, cfg)
 with tab2:
     levels = load_levels(cfg["levels_csv"])
     aesthetics.render_progress(levels)

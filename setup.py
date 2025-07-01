@@ -15,8 +15,15 @@ def authenticate():
         pw = st.text_input("🔒 Enter password", type="password")
         if pw == st.secrets["math_tutor"]["tutor_pw"]:
             st.session_state.authenticated = True
-            st.success("Access granted.")
+            st.success("Access granted (Tutor)!")
             st.rerun()
+            return "Tutor"
+        elif pw == st.secrets["math_tutor"]["tutee_pw"]:
+            st.session_state.authenticated = True
+            st.success("Access granted (Student)!")
+            st.rerun()
+            return "Tutee"
         elif pw:
             st.sidebar.error("Incorrect password.")
         st.stop()
+        return None

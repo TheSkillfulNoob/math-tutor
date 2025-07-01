@@ -11,7 +11,6 @@ def init_gsheets(config):
     sheet = client.open_by_key(config['gsheet_id']).sheet1
     return sheet
 
-
 def render(role, config):
     st.header("Exercises & Exercises Upload")
 
@@ -21,9 +20,9 @@ def render(role, config):
     st.table(df[['task', 'deadline', 'status']])
 
     # PDF upload
-    if role == 'tutor':
+    if role == 'Tutor':
         st.file_uploader("Upload new PDF", type=['pdf'], help="Max 10MB")
-    else:
+    else: # role = "Tutee"
         # tutee view / download
         # list files from Drive folder and allow download
         pass
