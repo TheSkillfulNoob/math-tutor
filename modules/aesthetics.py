@@ -5,6 +5,8 @@ from datetime import date
 
 # motivational quotes stored in a CSV
 QUOTES_FILE = "data/quotes.csv"
+SCORES_FILE = "data/scores.csv"
+TOPICS_FILE = "data/topics-breakdown.csv"
 
 def display_box(content):
     st.markdown(
@@ -59,13 +61,13 @@ STRAND_COLORS = {
 def render_progress():
     # 1) load & annotate
     df = pd.read_csv("data/topics-breakdown.csv")
-    df["core_topic"] = df["index"].map(TOPIC_MAP)
-    df["strand"]     = df["index"].map(STRAND_MAP)
+    df["core_topic"] = df["chapter"].map(TOPIC_MAP)
+    df["strand"]     = df["chapter"].map(STRAND_MAP)
 
     # 2) compute per-topic average
     avg = (
         df
-        .groupby(["index","core_topic","strand"], as_index=False)
+        .groupby(["chapter","core_topic","strand"], as_index=False)
         .level
         .mean()
     )
@@ -103,7 +105,16 @@ def show_weekly_quote():
     author = row.get("author", "")
     quote_text = f"“{quote}”\n\n— {author}"
 
-    # 2) Compute countdowns
+    # 2) load & compute weakest sub-items each week —
+    topics = pd.read_csv(TOPICS_FILE)
+    levels = pd.read_csv(LEVELS_FILE)
+    df_lv = topics.merge(levels, on="sub_item", how="left")
+    weakest = df_lv.nsmallest(3, "level")
+    weak_lines = [f"- {r['sub_item']} ({r['core_topic']}): L{r['level']}/7"
+                  for _,r in weakest.iterrows()]
+    weakest_text = "🔴 Weakest Sub-items\n\n" + "\n".join(weak_lines)
+    
+    # 3) Compute countdowns
     today = date.today()
     exam_dates = {
         "First Compulsory (9 Apr 2026)": date(2026, 4, 9),
