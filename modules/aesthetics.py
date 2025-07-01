@@ -106,13 +106,22 @@ def show_weekly_quote():
     quote_text = f"“{quote}”\n\n— {author}"
 
     # 2) load & compute weakest sub-items each week —
-    topics = pd.read_csv(TOPICS_FILE)
-    levels = pd.read_csv(SCORES_FILE)
-    df_lv = topics.merge(levels, on="sub_item", how="left")
+    BREAKDOWN_FILE = "data/topics‐breakdown.csv"
+    df_lv = pd.read_csv(BREAKDOWN_FILE)
+
+    # 2) (Optional) if you haven’t already, map numeric index→topic name
+    #    using the same TOPIC_MAP you used in your progress chart
+    df_lv["core_topic"] = df_lv["index"].map(TOPIC_MAP)
+
+    # 3) Find the 3 weakest sub‐items
     weakest = df_lv.nsmallest(3, "level")
-    weak_lines = [f"- {r['sub_item']} ({r['core_topic']}): L{r['level']}/7"
-                  for _,r in weakest.iterrows()]
-    weakest_text = "🔴 Weakest Sub-items\n\n" + "\n".join(weak_lines)
+
+    # 4) Format into your info box
+    weak_lines = [
+        f"- {r['sub_item']} ({r['core_topic']}): Level {r['level']}/7"
+        for _, r in weakest.iterrows()
+    ]
+    weakest_text = "🔴 Three weakest sub‐items\n\n" + "\n".join(weak_lines)
     
     # 3) Compute countdowns
     today = date.today()
