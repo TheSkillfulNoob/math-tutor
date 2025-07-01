@@ -6,6 +6,10 @@ from datetime import date
 # motivational quotes stored in a CSV
 QUOTES_FILE = "data/quotes.csv"
 
+def display_box(content):
+    st.markdown(
+        f'<p style="background-color:#0066cc;color:#33ff33;font-size:24px;border-radius:2%;">{content}</p>',
+        unsafe_allow_html=True)
 
 def show_weekly_quote():
     # 1) Load this week's quote
@@ -35,11 +39,11 @@ def show_weekly_quote():
     countdown_text = "📅 Upcoming\n\n" + "\n\n".join(lines)
 
     # 3) Render in two columns
-    col1, col2 = st.columns([0.7, 0.3])
+    col1, col2 = st.columns([0.58, 0.42])
     with col1:
         st.info(quote_text)
     with col2:
-        st.info(countdown_text)
+        display_box(countdown_text)
 
 
 def render_progress(config):
