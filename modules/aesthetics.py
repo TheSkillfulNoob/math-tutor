@@ -12,7 +12,7 @@ def show_weekly_quote():
     week = pd.Timestamp.today().isocalendar().week
     quote = df.iloc[week % len(df)]['quote']
     author = df.iloc[week % len(df)]['author']
-    st.info(f"💡 {quote} - \n{author}")
+    st.info(f"💡 Quote of Week {week}: \n\n {quote} - \t\t{author}")
 
 
 def render_progress(config):
