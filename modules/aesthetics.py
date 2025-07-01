@@ -1,18 +1,45 @@
 import streamlit as st
 import pandas as pd
 import random
+from datetime import date
 
 # motivational quotes stored in a CSV
 QUOTES_FILE = "data/quotes.csv"
 
 
 def show_weekly_quote():
+    # 1) Load this week's quote
     df = pd.read_csv(QUOTES_FILE)
-    # rotate quotes weekly (e.g. based on ISO week number)
-    week = pd.Timestamp.today().isocalendar().week
-    quote = df.iloc[week % len(df)]['quote']
-    author = df.iloc[week % len(df)]['author']
-    st.info(f"💡 Quote of Week {week}: \n\n {quote} - \t\t{author}")
+    today_ts = pd.Timestamp.today()
+    week = today_ts.isocalendar().week
+    row = df.iloc[week % len(df)]
+    quote = row["quote"]
+    author = row.get("author", "")
+    quote_text = f"💡 Week {week} Quote\n\n“{quote}”\n\n— {author}"
+
+    # 2) Compute countdowns
+    today = date.today()
+    exam_dates = {
+        "First Compulsory (9 Apr 2026)": date(2026, 4, 9),
+        "Math Exam (13 Apr 2026)":    date(2026, 4, 13),
+        "Results Release (15 Jul 2026)": date(2026, 7, 15),
+    }
+    lines = []
+    for label, dt in exam_dates.items():
+        days = (dt - today).days
+        if days >= 0:
+            lines.append(f"**{label}**: {days} days to go")
+        else:
+            lines.append(f"**{label}**: 🏁 done")
+
+    countdown_text = "📅 Upcoming\n\n" + "\n\n".join(lines)
+
+    # 3) Render in two columns
+    col1, col2 = st.columns([0.7, 0.3])
+    with col1:
+        st.info(quote_text)
+    with col2:
+        st.info(countdown_text)
 
 
 def render_progress(config):

@@ -14,7 +14,7 @@ role = authenticate()
 # show weekly quote
 aesthetics.show_weekly_quote()
 
-tab1, tab2, tab3 = st.tabs(["Exercises", "Progress", "Docs"])
+tab1, tab2, tab3 = st.tabs(["✍️ Exercises", "💯 Progress", "📄 Docs"])
 with tab1:
     paper_system.render(role, g_auth)
 with tab2:
