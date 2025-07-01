@@ -11,7 +11,8 @@ def show_weekly_quote():
     # rotate quotes weekly (e.g. based on ISO week number)
     week = pd.Timestamp.today().isocalendar().week
     quote = df.iloc[week % len(df)]['quote']
-    st.info(f"💡 {quote}")
+    author = df.iloc[week % len(df)]['author']
+    st.info(f"💡 {quote} - \n{author}")
 
 
 def render_progress(config):
