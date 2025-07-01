@@ -114,11 +114,11 @@ def show_weekly_quote():
     df_lv["core_topic"] = df_lv["index"].map(TOPIC_MAP)
 
     # 3) Find the 3 weakest sub‐items
-    weakest = df_lv.nsmallest(3, "level")
+    weakest = df_lv.nsmallest(3, "rate")
 
     # 4) Format into your info box
     weak_lines = [
-        f"- {r['sub_item']} ({r['core_topic']}): Level {r['level']}/7"
+        f"- {r['sub_item']} ({r['core_topic']}): Level {r['rate']}/7"
         for _, r in weakest.iterrows()
     ]
     weakest_text = "🔴 Three weakest sub-items\n\n" + "\n".join(weak_lines)
