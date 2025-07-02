@@ -96,7 +96,7 @@ def _show_available_papers(config):
     # 2) map mock-selection subfolders
     root_id    = config["mock_selection_folder_id"]
     subfolders = {f["name"]: f["id"] for f in list_subfolders(root_id)}
-    st.info(subfolders)
+    st.info(subfolders) #This is an empty dictionary when testing
 
     # 3) for each available set, list P1/P2/MS links
     for _, row in available.iterrows():
