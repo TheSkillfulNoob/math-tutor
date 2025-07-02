@@ -96,14 +96,14 @@ def _show_available_papers(config):
     # 2) map mock-selection subfolders
     root_id    = config["mock_selection_folder_id"]
     subfolders = {f["name"]: f["id"] for f in list_subfolders(root_id)}
-    st.info(sorted(subfolders.keys())) #This is an empty dictionary when testing
+    st.info(sorted(subfolders.keys())) #Populates properly!
 
     # 3) for each available set, list P1/P2/MS links
     for _, row in available.iterrows():
         set_name = row["idx"]
         bd = row["begin-date"].strftime("%Y-%m-%d")
         ed = row["end-date"].strftime("%Y-%m-%d")
-        st.subheader(f"{set_name}  ({bd} → {ed})")
+        st.subheader(f"📄 {set_name}  ({bd} → {ed})")
 
         folder_id = subfolders.get(set_name)
         if not folder_id:
@@ -111,16 +111,66 @@ def _show_available_papers(config):
             continue
 
         files = list_files(folder_id)
-        # quick‐and‐dirty grouping by prefix
+        # 1) categorize URLs
+        p1_url = p2_url = ms_url = p2ms_url = None
         for f in files:
             name = f["name"]
             fid  = f["id"]
             url  = f"https://drive.google.com/uc?export=download&id={fid}"
+            low  = name.lower()
+            if low.startswith("p1 ") or low.startswith("p1."):
+                # plain P1 paper
+                if "ms" in low:
+                    # P1 MS
+                    ms_url = url
+                else:
+                    p1_url = url
+            elif low.startswith("p2 ") or low.startswith("p2."):
+                # plain P2 paper
+                if "ms" in low:
+                    # P2 MS
+                    p2ms_url = url
+                else:
+                    p2_url = url
+            elif low == "ms" or low == "ms.pdf":
+                # generic MS
+                ms_url = url
+        # 2) render as 4 columns of buttons
+        col1, col2, col3, col4 = st.columns(4)
+        BUTTON_HTML = '<a href="{url}" target="_blank"><button style="width:100%">{label}</button></a>'
+        with col1:
+            if p1_url:
+                st.markdown(
+                    BUTTON_HTML.format(url=p1_url, label="Download P1"),
+                    unsafe_allow_html=True
+                )
+            else:
+                st.write("—")
 
-            low = name.lower()
-            if low.startswith("p1"):
-                st.markdown(f"- [Download {name}]({url})")
-            elif low.startswith("p2"):
-                st.markdown(f"- [Download {name}]({url})")
-            elif "ms" in low:
-                st.markdown(f"- [Download Marking Scheme - {name}]({url})")
+        with col2:
+            if p2_url:
+                st.markdown(
+                    BUTTON_HTML.format(url=p2_url, label="Download P2"),
+                    unsafe_allow_html=True
+                )
+            else:
+                st.write("—")
+
+        with col3:
+            if ms_url:
+                st.markdown(
+                    BUTTON_HTML.format(url=ms_url, label="Download MS"),
+                    unsafe_allow_html=True
+                )
+            else:
+                st.write("—")
+
+        with col4:
+            # only show a separate P2 MS button if you actually found one
+            if p2ms_url:
+                st.markdown(
+                    BUTTON_HTML.format(url=p2ms_url, label="Download P2 MS"),
+                    unsafe_allow_html=True
+                )
+            else:
+                st.write("—")
