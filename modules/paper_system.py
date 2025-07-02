@@ -177,8 +177,8 @@ def _show_available_papers(config):
                 ms_url = url
         # 2) render as 4 columns of buttons
         col1, col2, col3, col4 = st.columns(4)
-        BUTTON_QP_HTML = '<a href="{url}" target="_blank"><button class="qp-button">{label}</button></a>'
-        BUTTON_MS_HTML = '<a href="{url}" target="_blank"><button class="ms-button">{label}</button></a>'
+        BUTTON_QP_HTML = '<a href="{url}" target="_blank"><button style = "background-color: #FFA500; color: #ffffff; border: none; border-radius: 5px; padding: 8px 0; width: 100%; font-size: 16px; cursor: pointer; transition: background-color 0.2s ease" onmouseover="this.style.color=#FF8C00">{label}</button></a>'
+        BUTTON_MS_HTML = '<a href="{url}" target="_blank"><button style = "background-color: #007BFF; color: #ffffff; border: none; border-radius: 5px; padding: 8px 0; width: 100%; font-size: 16px; cursor: pointer; transition: background-color 0.2s ease" onmouseover="this.style.color=#0056b3">{label}</button></a>'
 
         with col1:
             if p1_url:
