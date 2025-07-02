@@ -100,7 +100,7 @@ def _show_available_papers(config):
 
     # 3) for each available set, list P1/P2/MS links
     for _, row in available.iterrows():
-        set_name = row["paper-set"]
+        set_name = row["idx"]
         bd = row["begin-date"].strftime("%Y-%m-%d")
         ed = row["end-date"].strftime("%Y-%m-%d")
         st.subheader(f"{set_name}  ({bd} → {ed})")
