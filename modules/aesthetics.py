@@ -180,14 +180,14 @@ def render_progress(
     df["strand"]     = df["index"].map(STRAND_MAP)
     avg = df.groupby(
         ["index","core_topic","strand"], as_index=False
-    ).level.mean()
+    ).rate.mean()
     order = [TOPIC_MAP[i] for i in sorted(TOPIC_MAP)]
     topic_chart = (
         alt.Chart(avg)
            .mark_bar(cornerRadiusTopLeft=3, cornerRadiusTopRight=3)
            .encode(
              x=alt.X("core_topic:N", sort=order, axis=alt.Axis(labelAngle=-45)),
-             y=alt.Y("level:Q", title="Average Level (out of 7)"),
+             y=alt.Y("rate:Q", title="Average Level (out of 7)"),
              color=alt.Color("strand:N",
                scale=alt.Scale(
                  domain=list(STRAND_COLORS.keys()),
