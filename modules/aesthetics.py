@@ -126,7 +126,7 @@ def show_weekly_quote(quotes_df: pd.DataFrame, topics_df: pd.DataFrame):
     quote_text = f"“{quote}”\n\n— {author}"
 
     # 2) load & compute weakest sub-items each week —
-    weakest = topics_df.nsmallest(3, "level")
+    weakest = topics_df.nsmallest(3, "rate")
 
     # 4) Format into your info box
     weak_lines = [
@@ -174,7 +174,7 @@ def render_progress(
 ):
     st.header("Progress Tracker")
 
-    # 1) Topic-mastery chart
+    # ── 1) Topic-mastery chart (unchanged) ──
     df = topics_df.copy()
     df["core_topic"] = df["index"].map(TOPIC_MAP)
     df["strand"]     = df["index"].map(STRAND_MAP)
@@ -182,15 +182,15 @@ def render_progress(
         ["index","core_topic","strand"], as_index=False
     ).level.mean()
     order = [TOPIC_MAP[i] for i in sorted(TOPIC_MAP)]
-    chart = (
+    topic_chart = (
         alt.Chart(avg)
            .mark_bar(cornerRadiusTopLeft=3, cornerRadiusTopRight=3)
            .encode(
              x=alt.X("core_topic:N", sort=order, axis=alt.Axis(labelAngle=-45)),
-             y=alt.Y("level:Q", title="Average (out of 7)"),
+             y=alt.Y("level:Q", title="Average Level (out of 7)"),
              color=alt.Color("strand:N",
                scale=alt.Scale(
-                 domain=list(STRAND_COLORS),
+                 domain=list(STRAND_COLORS.keys()),
                  range=list(STRAND_COLORS.values())
                ),
                legend=alt.Legend(title="Strand")
@@ -198,18 +198,42 @@ def render_progress(
            )
            .properties(height=350)
     )
-    st.altair_chart(chart, use_container_width=True)
+    st.altair_chart(topic_chart, use_container_width=True)
 
-    # 2) Paper 1 section scores (assumes columns “section” & “score”)
-    st.subheader("◆ Paper 1 Scores")
-    st.bar_chart(
-      scores_p1.set_index("section")["score"],
-      use_container_width=True
+
+    # ── 2) Paper 1 ──
+    scores_p1 = scores_p1.copy()
+    scores_p1["Date"] = pd.to_datetime(scores_p1["Date"])
+    scores_p1 = scores_p1.sort_values("Date")
+
+    st.subheader("Paper 1: Section Scores Over Time")
+    st.line_chart(
+        scores_p1.set_index("Date")[["A1","A2","B"]],
+        use_container_width=True
     )
 
-    # 3) Paper 2 overall (or by-section) scores
-    st.subheader("◆ Paper 2 Scores")
-    st.bar_chart(
-      scores_p2.set_index("section")["score"],
-      use_container_width=True
+    st.subheader("Paper 1: Total Score + 5-Exam MA")
+    scores_p1["MA5"] = scores_p1["Total"].rolling(5, min_periods=1).mean()
+    st.line_chart(
+        scores_p1.set_index("Date")[["Total","MA5"]],
+        use_container_width=True
+    )
+
+
+    # ── 3) Paper 2 ──
+    scores_p2 = scores_p2.copy()
+    scores_p2["Date"] = pd.to_datetime(scores_p2["Date"])
+    scores_p2 = scores_p2.sort_values("Date")
+
+    st.subheader("Paper 2: Section Scores Over Time")
+    st.line_chart(
+        scores_p2.set_index("Date")[["A","B"]],
+        use_container_width=True
+    )
+
+    st.subheader("Paper 2: Total Score + 5-Exam MA")
+    scores_p2["MA5"] = scores_p2["Total"].rolling(5, min_periods=1).mean()
+    st.line_chart(
+        scores_p2.set_index("Date")[["Total","MA5"]],
+        use_container_width=True
     )
