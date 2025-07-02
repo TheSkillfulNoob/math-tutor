@@ -16,17 +16,17 @@ def authenticate():
         return st.session_state.role
 
     # 3) Show login UI
-    pw = st.sidebar.text_input("🔒 Enter password", type="password")
+    pw = st.text_input("🔒 Enter password", type="password")
 
     if pw:
         if pw == st.secrets["math_tutor"]["tutor_pw"]:
             st.session_state.role = "Tutor"
             st.success("Access granted (Tutor)!")
-            st.experimental_rerun()
+            st.rerun()
         elif pw == st.secrets["math_tutor"]["tutee_pw"]:
             st.session_state.role = "Tutee"
             st.success("Access granted (Student)!")
-            st.experimental_rerun()
+            st.rerun()
         else:
             st.sidebar.error("Incorrect password.")
 
