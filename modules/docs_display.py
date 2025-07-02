@@ -22,7 +22,7 @@ def render(role, cfg):
             st.success("Feedback recorded.")
 
     # ——— everyone sees the feedback list ——
-    df_fb = fetch_records(cfg["gsheet_id"], "feedback")
+    df_fb = fetch_records("Math-tutor", "feedback")
     for _, row in df_fb.iterrows():
         st.info(
           f"**{row['file_name']}**  \n"
