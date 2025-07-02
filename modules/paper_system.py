@@ -4,7 +4,7 @@ import gspread
 from google.oauth2.service_account import Credentials
 from datetime import datetime
 
-def init_worksheet(config, sheet_name: str):
+def init_worksheet(sheet_name: str):
     scopes = [
         "https://www.googleapis.com/auth/spreadsheets",
         "https://www.googleapis.com/auth/drive",
@@ -13,7 +13,7 @@ def init_worksheet(config, sheet_name: str):
         st.secrets["gcp_service_account"], scopes=scopes
     )
     client = gspread.authorize(creds)
-    return client.open_by_key(config["Math-tutor"]).worksheet(sheet_name)
+    return client.open("Math-tutor").worksheet(sheet_name)
 
 def render(role: str, config: dict):
     st.header("Exercises & Paper Scores")
@@ -42,7 +42,7 @@ def _add_p1_score(config):
         comments = st.text_area("Comments")
         if st.form_submit_button("Submit P1"):
             total = a1 + a2 + b
-            ws = init_worksheet(config, "scores_p1")
+            ws = init_worksheet("scores_p1")
             ws.append_row([
                 d.isoformat(),
                 set_name,
@@ -67,7 +67,7 @@ def _add_p2_score(config):
         comments = st.text_area("Comments")
         if st.form_submit_button("Submit P2"):
             total = a + b
-            ws = init_worksheet(config, "scores_p2")
+            ws = init_worksheet("scores_p2")
             ws.append_row([
                 d.isoformat(),
                 set_name,
