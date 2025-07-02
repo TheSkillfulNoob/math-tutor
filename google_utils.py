@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import gspread
 from gspread_dataframe import set_with_dataframe
+from google.oauth2.service_account import Credentials
 from pydrive2.auth import GoogleAuth, ServiceAccountCredentials
 from pydrive2.drive import GoogleDrive
 
