@@ -26,3 +26,7 @@ def fetch_records(sheet_key, ws_name):
 def push_dataframe(sheet_key, ws_name, df):
     ws = _connect(sheet_key, ws_name)
     set_with_dataframe(ws, df)
+    
+def append_record(sheet_key, ws_name, record: list):
+    ws = _connect(sheet_key, ws_name)
+    ws.append_row(record)

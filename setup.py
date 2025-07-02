@@ -5,7 +5,7 @@ def configure_page():
     st.set_page_config(
         page_title="HKDSE Math Dashboard", layout="wide"
     )
-    st.title("🎓 Math Tuition Dashboard for Anna")
+    st.title("🎓 Math Tuition Dashboard for Student")
 
 def authenticate():
     if "authenticated" not in st.session_state:

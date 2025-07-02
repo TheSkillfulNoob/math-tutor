@@ -1,24 +1,27 @@
 from setup import configure_page, authenticate
 import streamlit as st
-from csv_utils import load_levels
-from google_utils import fetch_records, push_dataframe
 from modules import paper_system, aesthetics, docs_display
+from google_utils import fetch_records
 
-# Pull your entire config namespace directly:
-cfg = st.secrets["math_tutor"]
-g_auth = st.secrets["auth"]
+cfg     = st.secrets["math_tutor"]
+sheet   = "Math-tutor"
 
 configure_page()
 role = authenticate()
 
-# show weekly quote
-aesthetics.show_weekly_quote()
+# pull each worksheet into a DataFrame
+df_topics   = fetch_records(sheet, "topics-breakdown")
+df_quotes   = fetch_records(sheet, "quotes")
+df_scores1  = fetch_records(sheet, "scores_p1")
+df_scores2  = fetch_records(sheet, "scores_p2")
+
+# Quote + weakest + countdown
+aesthetics.show_weekly_quote(df_quotes, df_topics)
 
 tab1, tab2, tab3 = st.tabs(["✍️ Exercises", "💯 Progress", "📄 Docs"])
 with tab1:
-    paper_system.render(role, g_auth)
+    paper_system.render(role, cfg)
 with tab2:
-    levels = load_levels(cfg["levels_csv"])
-    aesthetics.render_progress(levels)
+    aesthetics.render_progress(df_topics, df_scores1, df_scores2)
 with tab3:
-    docs_display.render(cfg)
+    docs_display.render(role, cfg)

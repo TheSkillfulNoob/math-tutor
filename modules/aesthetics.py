@@ -116,22 +116,17 @@ def render_progress():
     )
     st.altair_chart(chart, use_container_width=True)
 
-def show_weekly_quote():
-    # 1) Load this week's quote
-    df = pd.read_csv(QUOTES_FILE)
-    today_ts = pd.Timestamp.today()
-    week = today_ts.isocalendar().week
-    row = df.iloc[week % len(df)]
-    quote = row["quote"]
-    author = row.get("author", "")
+
+
+def show_weekly_quote(quotes_df: pd.DataFrame, topics_df: pd.DataFrame):
+    week = pd.Timestamp.today().isocalendar().week
+    q = quotes_df.iloc[week % len(quotes_df)]
+    author = q.get("author", "")
+    quote = q.get("quote", "")
     quote_text = f"“{quote}”\n\n— {author}"
 
     # 2) load & compute weakest sub-items each week —
-    BREAKDOWN_FILE = "data/topics-breakdown.csv"
-    df_lv = pd.read_csv(BREAKDOWN_FILE)
-
-    # 3) Find the 3 weakest sub‐items
-    weakest = df_lv.nsmallest(3, "rate")
+    weakest = topics_df.nsmallest(3, "level")
 
     # 4) Format into your info box
     weak_lines = [
@@ -172,16 +167,49 @@ def show_weekly_quote():
         st.markdown(f":rainbow-background[• {lines[2]}]")
 
 
-def render_progress(config):
+def render_progress(
+    topics_df: pd.DataFrame,
+    scores_p1: pd.DataFrame,
+    scores_p2: pd.DataFrame
+):
     st.header("Progress Tracker")
-    # load levels from CSV
-    levels = pd.read_csv(config['levels_csv'])
-    st.subheader("Topic Mastery")
-    for _, row in levels.iterrows():
-        st.write(f"**{row['topic']}**")
-        st.progress(int(row['mastery'] * 100))
 
-    # paper scores (assumes a CSV)
-    scores = pd.read_csv(config['scores_csv'])
-    st.subheader("Section Scores")
-    st.bar_chart(scores.set_index('section')['score'])
+    # 1) Topic-mastery chart
+    df = topics_df.copy()
+    df["core_topic"] = df["index"].map(TOPIC_MAP)
+    df["strand"]     = df["index"].map(STRAND_MAP)
+    avg = df.groupby(
+        ["index","core_topic","strand"], as_index=False
+    ).level.mean()
+    order = [TOPIC_MAP[i] for i in sorted(TOPIC_MAP)]
+    chart = (
+        alt.Chart(avg)
+           .mark_bar(cornerRadiusTopLeft=3, cornerRadiusTopRight=3)
+           .encode(
+             x=alt.X("core_topic:N", sort=order, axis=alt.Axis(labelAngle=-45)),
+             y=alt.Y("level:Q", title="Average (out of 7)"),
+             color=alt.Color("strand:N",
+               scale=alt.Scale(
+                 domain=list(STRAND_COLORS),
+                 range=list(STRAND_COLORS.values())
+               ),
+               legend=alt.Legend(title="Strand")
+             )
+           )
+           .properties(height=350)
+    )
+    st.altair_chart(chart, use_container_width=True)
+
+    # 2) Paper 1 section scores (assumes columns “section” & “score”)
+    st.subheader("◆ Paper 1 Scores")
+    st.bar_chart(
+      scores_p1.set_index("section")["score"],
+      use_container_width=True
+    )
+
+    # 3) Paper 2 overall (or by-section) scores
+    st.subheader("◆ Paper 2 Scores")
+    st.bar_chart(
+      scores_p2.set_index("section")["score"],
+      use_container_width=True
+    )
