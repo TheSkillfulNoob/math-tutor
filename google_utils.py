@@ -5,7 +5,7 @@ from gspread_dataframe import set_with_dataframe
 from google.oauth2.service_account import Credentials
 
 
-def _connect(sheet_key, worksheet_name):
+def _connect(sheet_name, worksheet_name):
     scopes = [
         "https://www.googleapis.com/auth/spreadsheets",
         "https://www.googleapis.com/auth/drive",
@@ -15,7 +15,7 @@ def _connect(sheet_key, worksheet_name):
         scopes=scopes,
     )
     client = gspread.authorize(creds)
-    return client.open_by_key(sheet_key).worksheet(worksheet_name)
+    return client.open(sheet_name).worksheet(worksheet_name)
 
 
 def fetch_records(sheet_key, ws_name):
