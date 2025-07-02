@@ -3,28 +3,30 @@ import pandas as pd
 import gspread
 from gspread_dataframe import set_with_dataframe
 from google.oauth2.service_account import Credentials
-from googleapiclient.discovery import build
+from pydrive2.auth import GoogleAuth
+from pydrive2.drive import GoogleDrive
 
-def _get_drive_service():
-    scopes = ["https://www.googleapis.com/auth/drive"]
+def _init_drive():
+    # construct Credentials from your service-account JSON in st.secrets
     creds = Credentials.from_service_account_info(
-        st.secrets["gcp_service_account"], scopes=scopes
+        st.secrets["gcp_service_account"],
+        scopes=["https://www.googleapis.com/auth/drive"]
     )
-    return build("drive", "v3", credentials=creds)
+    gauth = GoogleAuth()
+    gauth.credentials = creds
+    return GoogleDrive(gauth)
 
 def list_subfolders(folder_id: str) -> list[dict]:
-    """Return list of {id,name} for each subfolder in folder_id."""
-    svc = _get_drive_service()
+    drive = _init_drive()
     q = f"'{folder_id}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false"
-    resp = svc.files().list(q=q, fields="files(id,name)").execute()
-    return resp.get("files", [])
+    files = drive.ListFile({'q': q}).GetList()
+    return [{"id":f["id"], "name":f["title"]} for f in files]
 
 def list_files(folder_id: str) -> list[dict]:
-    """Return list of {id,name} for each file in folder_id."""
-    svc = _get_drive_service()
+    drive = _init_drive()
     q = f"'{folder_id}' in parents and trashed=false"
-    resp = svc.files().list(q=q, fields="files(id,name)").execute()
-    return resp.get("files", [])
+    files = drive.ListFile({'q': q}).GetList()
+    return [{"id":f["id"], "name":f["title"]} for f in files]
 
 def _connect(sheet_name, worksheet_name):
     scopes = [
