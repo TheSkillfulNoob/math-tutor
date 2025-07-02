@@ -5,6 +5,45 @@ from google.oauth2.service_account import Credentials
 from datetime import datetime
 from google_utils import fetch_records, list_subfolders, list_files
 
+st.markdown(
+    """
+    <style>
+      /* Question-Paper button (orange) */
+      .qp-button {
+        background-color: #FFA500;
+        color: #ffffff;
+        border: none;
+        border-radius: 5px;
+        padding: 8px 0;
+        width: 100%;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+      }
+      .qp-button:hover {
+        background-color: #FF8C00;
+      }
+
+      /* Marking-Scheme button (blue) */
+      .ms-button {
+        background-color: #007BFF;
+        color: #ffffff;
+        border: none;
+        border-radius: 5px;
+        padding: 8px 0;
+        width: 100%;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+      }
+      .ms-button:hover {
+        background-color: #0056b3;
+      }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 def init_worksheet(sheet_name: str):
     scopes = [
         "https://www.googleapis.com/auth/spreadsheets",
@@ -96,7 +135,7 @@ def _show_available_papers(config):
     # 2) map mock-selection subfolders
     root_id    = config["mock_selection_folder_id"]
     subfolders = {f["name"]: f["id"] for f in list_subfolders(root_id)}
-    st.info(sorted(subfolders.keys())) #Populates properly!
+    # st.info(sorted(subfolders.keys())) # Debug
 
     # 3) for each available set, list P1/P2/MS links
     for _, row in available.iterrows():
@@ -113,6 +152,7 @@ def _show_available_papers(config):
         files = list_files(folder_id)
         # 1) categorize URLs
         p1_url = p2_url = ms_url = p2ms_url = None
+        p1_have_ms = False
         for f in files:
             name = f["name"]
             fid  = f["id"]
@@ -121,7 +161,7 @@ def _show_available_papers(config):
             if low.startswith("p1 ") or low.startswith("p1."):
                 # plain P1 paper
                 if "ms" in low:
-                    # P1 MS
+                    p1_have_ms = True
                     ms_url = url
                 else:
                     p1_url = url
@@ -137,11 +177,13 @@ def _show_available_papers(config):
                 ms_url = url
         # 2) render as 4 columns of buttons
         col1, col2, col3, col4 = st.columns(4)
-        BUTTON_HTML = '<a href="{url}" target="_blank"><button style="width:100%">{label}</button></a>'
+        BUTTON_QP_HTML = '<a href="{url}" target="_blank"><button class="qp-button">{label}</button></a>'
+        BUTTON_MS_HTML = '<a href="{url}" target="_blank"><button class="ms-button">{label}</button></a>'
+
         with col1:
             if p1_url:
                 st.markdown(
-                    BUTTON_HTML.format(url=p1_url, label="Download P1"),
+                    BUTTON_QP_HTML.format(url=p1_url, label="Download P1"),
                     unsafe_allow_html=True
                 )
             else:
@@ -150,7 +192,7 @@ def _show_available_papers(config):
         with col2:
             if p2_url:
                 st.markdown(
-                    BUTTON_HTML.format(url=p2_url, label="Download P2"),
+                    BUTTON_QP_HTML.format(url=p2_url, label="Download P2"),
                     unsafe_allow_html=True
                 )
             else:
@@ -159,7 +201,7 @@ def _show_available_papers(config):
         with col3:
             if ms_url:
                 st.markdown(
-                    BUTTON_HTML.format(url=ms_url, label="Download MS"),
+                    BUTTON_MS_HTML.format(url=ms_url, label="Download P1 MS" if p1_have_ms else "Download MS (Combined)"),
                     unsafe_allow_html=True
                 )
             else:
@@ -169,7 +211,7 @@ def _show_available_papers(config):
             # only show a separate P2 MS button if you actually found one
             if p2ms_url:
                 st.markdown(
-                    BUTTON_HTML.format(url=p2ms_url, label="Download P2 MS"),
+                    BUTTON_MS_HTML.format(url=p2ms_url, label="Download P2 MS"),
                     unsafe_allow_html=True
                 )
             else:
