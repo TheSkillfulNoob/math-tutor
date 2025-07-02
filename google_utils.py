@@ -2,27 +2,26 @@ import streamlit as st
 import pandas as pd
 import gspread
 from gspread_dataframe import set_with_dataframe
-from google.oauth2.service_account import Credentials
-from pydrive2.auth import GoogleAuth
+from pydrive2.auth import GoogleAuth, ServiceAccountCredentials
 from pydrive2.drive import GoogleDrive
 
 def _init_drive():
-    # construct Credentials from your service-account JSON in st.secrets
-    creds = Credentials.from_service_account_info(
+    # 1) build a GoogleAuth set up for service‐account
+    gauth = GoogleAuth()
+    gauth.auth_method = "service"
+    gauth.credentials = ServiceAccountCredentials.from_json_keyfile_dict(
         st.secrets["gcp_service_account"],
         scopes=["https://www.googleapis.com/auth/drive"]
     )
-    gauth = GoogleAuth()
-    gauth.credentials = creds
     return GoogleDrive(gauth)
 
-def list_subfolders(folder_id: str) -> list[dict]:
+def list_subfolders(folder_id: str):
     drive = _init_drive()
     q = f"'{folder_id}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false"
     files = drive.ListFile({'q': q}).GetList()
     return [{"id":f["id"], "name":f["title"]} for f in files]
 
-def list_files(folder_id: str) -> list[dict]:
+def list_files(folder_id: str):
     drive = _init_drive()
     q = f"'{folder_id}' in parents and trashed=false"
     files = drive.ListFile({'q': q}).GetList()
