@@ -170,7 +170,7 @@ def show_topic_mastery(topics_df: pd.DataFrame):
 
     avg = (
         df
-        .groupby(["index","core_topic","strand"], as_index=False)
+        .groupby(["core_topic","strand"], as_index=False)
         .rate.mean()
     )
     st.info(avg)
@@ -201,10 +201,6 @@ def show_topic_mastery(topics_df: pd.DataFrame):
     st.markdown("---")
     st.header("🗂 Chapters & Sub-topics")
 
-    # 1) Prepare helper maps
-    # TOPIC_MAP: idx → chapter name
-    # STRAND_MAP: idx → strand name
-    # STRAND_COLORS: strand → hex color
     chapter_idxs = sorted(TOPIC_MAP.keys())  # [1,2,…,14]
 
     # 2) Break into rows of 4
@@ -232,11 +228,11 @@ def show_topic_mastery(topics_df: pd.DataFrame):
                 st.subheader(label)
                 # with st.expander(label, expanded=False):
                     # list each sub-item and its rate
-                subs = topics_df[topics_df["index"] == idx]
+                subs = topics_df[topics_df["chapter"] == idx]
                 text = ""
                 bullet = f"<span style='color:{color}'>&#9679;</span>"
                 for _, sub in subs.iterrows():
-                    text.append (f"{bullet} {sub['topic']}: {sub['rate']}/ 7")
+                    text.append(f"{bullet} {sub['topic']}: {sub['rate']}/ 7")
                 st.info("\n\n".join(text))
     st.markdown("---")
 
