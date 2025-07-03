@@ -25,7 +25,7 @@ def authenticate():
             st.rerun()
         elif pw == st.secrets["math_tutor"]["tutee_pw"]:
             st.session_state.role = "Tutee"
-            st.success("Access granted (Student)!")
+            st.success("Access granted (Anna)!")
             st.rerun()
         else:
             st.error("Incorrect password.") #st.sidebar.error?
