@@ -230,9 +230,8 @@ def show_topic_mastery(topics_df: pd.DataFrame):
                     # list each sub-item and its rate
                 subs = topics_df[topics_df["chapter"] == idx]
                 text = []
-                bullet = f"<span style='color:{color}'>&#9679;</span>"
                 for _, sub in subs.iterrows():
-                    text.append(f"{bullet} {sub['topic']}: {sub['rate']}/ 7")
+                    text.append(f"&#9679 {sub['topic']}: {sub['rate']}/ 7")
                 st.info("\n\n".join(text))
     st.markdown("---")
 
