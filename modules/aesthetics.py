@@ -148,12 +148,15 @@ def show_latest_results(scores_p1: pd.DataFrame, scores_p2: pd.DataFrame):
         pct = latest["Total_pct"]
 
         st.subheader(f"{label}")
-        c1, c2 = st.columns([0.5, 0.5])
+        c1, c2 = st.columns([0.35, 0.65])
         with c1:
-            st.markdown(f"**Score:** {obt}/{mx}  \n**Pct:** {pct:.1f}%")
+            st.markdown(f"**Score:** {obt}/{mx} ({pct:.1f}%)")
+            if label == "Paper 1":
+                st.markdown(f"**Sections:** [A1]{latest["A1_raw"]}/{latest["A1_max"]}; [A2]{latest["A2_raw"]}/{latest["A2_max"]}; [B]{latest["B_raw"]}/{latest["B_max"]}")
+            else:
+                st.markdown(f"**Sections:** [A]{latest["A_raw"]}/{latest["A_max"]}; [B]{latest["B_raw"]}/{latest["B_max"]}")
         with c2:
-            st.markdown("**Comment:**")
-            st.write(latest.get("Comments", "_No comment_"))
+            st.info(f"**Comment:**\n\n{latest.get("Comments", "_No comment_")}")
     st.markdown("---")
 
 
@@ -189,7 +192,7 @@ def show_topic_mastery(topics_df: pd.DataFrame):
 
 
 def show_lessons_feedback(lessons_df: pd.DataFrame, feedback_df: pd.DataFrame):
-    """Tab 3: two‐column lessons & feedback."""
+    """Tab 3: two-column lessons & feedback."""
     st.header("📝 Lessons & Key Points / Feedback")
 
     col1, col2 = st.columns(2)
