@@ -79,45 +79,6 @@ STRAND_COLORS = {
     "Data Handling": "#d62728",
 }
 
-def render_progress():
-    # 1) load & annotate
-    df = pd.read_csv("data/topics-breakdown.csv")
-    df["core_topic"] = df["chapter"].map(TOPIC_MAP)
-    df["strand"]     = df["chapter"].map(STRAND_MAP)
-
-    # 2) compute per-topic average
-    avg = (
-        df
-        .groupby(["chapter","core_topic","strand"], as_index=False)
-        .level
-        .mean()
-    )
-
-    # 3) build an Altair bar chart with strand-colours
-    order = [TOPIC_MAP[i] for i in sorted(TOPIC_MAP)]
-    chart = (
-        alt.Chart(avg)
-           .mark_bar(cornerRadiusTopLeft=3, cornerRadiusTopRight=3)
-           .encode(
-               x=alt.X("core_topic:N",
-                       sort=order,
-                       title=None,
-                       axis=alt.Axis(labelAngle=-45)),
-               y=alt.Y("level:Q",
-                       title="Average Level (out of 7)"),
-               color=alt.Color("strand:N",
-                               scale=alt.Scale(
-                                   domain=list(STRAND_COLORS.keys()),
-                                   range=list(STRAND_COLORS.values())
-                               ),
-                               legend=alt.Legend(title="Strand"))
-           )
-           .properties(height=400, width=800)
-    )
-    st.altair_chart(chart, use_container_width=True)
-
-
-
 def show_weekly_quote(quotes_df: pd.DataFrame, topics_df: pd.DataFrame):
     week = pd.Timestamp.today().isocalendar().week
     q = quotes_df.iloc[week % len(quotes_df)]
