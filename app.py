@@ -30,4 +30,8 @@ with tab2:
         df_scores2
     )
 with tab3:
-    docs_display.render_handouts(role, cfg, df_lessons, df_feedback)
+    docs_display.render_handouts(
+        role, 
+        cfg, 
+        df_lessons, 
+        df_feedback)

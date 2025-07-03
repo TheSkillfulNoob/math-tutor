@@ -28,7 +28,7 @@ def show_feedback(role, cfg):
         if fb and comment:
             # 1) upload to your Drive folder however you do that
             #    (e.g. use Drive API / PyDrive – omitted for brevity)
-            file_link = f"https://drive.google.com/…/{fb.name}"
+            file_link = f"https://drive.google.com/file/d/{fb.name}"
             # 2) record into a “feedback” sheet
             append_record(
               cfg["gsheet_id"],
