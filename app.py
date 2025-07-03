@@ -32,6 +32,5 @@ with tab2:
 with tab3:
     docs_display.render_handouts(
         role, 
-        cfg, 
-        df_lessons, 
-        df_feedback)
+        cfg
+        )
