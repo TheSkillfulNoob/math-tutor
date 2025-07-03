@@ -180,7 +180,7 @@ def show_topic_mastery(topics_df: pd.DataFrame):
         alt.Chart(avg)
            .mark_bar(cornerRadiusTopLeft=3, cornerRadiusTopRight=3)
            .encode(
-             x=alt.X("chapter:Q",
+             x=alt.X("core_topic:N",
                      sort=order,
                      axis=alt.Axis(labelAngle=-45)),
              y=alt.Y("rate:Q",
@@ -231,8 +231,8 @@ def show_topic_mastery(topics_df: pd.DataFrame):
                 subs = topics_df[topics_df["chapter"] == idx]
                 text = []
                 for _, sub in subs.iterrows():
-                    text.append(f"&#9679 {sub['topic']}: {sub['rate']}/ 7")
-                st.info("\n\n".join(text))
+                    text.append(f"- {sub['topic']}: {sub['rate']}/ 7")
+                st.info("\n".join(text))
     st.markdown("---")
 
 def render_progress(

@@ -19,7 +19,7 @@ def show_lessons_summary(lessons_df: pd.DataFrame, feedback_df: pd.DataFrame):
         st.markdown("---")
 
 def show_feedback(role, cfg):
-    st.header("Official Documents & Feedback")
+    st.header("Non-Lesson Feedback Hangouts")
 
     # ——— teacher view: upload a PDF and push metadata to “feedback” sheet ——
     if role == "Tutor":
@@ -41,8 +41,8 @@ def show_feedback(role, cfg):
     df_fb = fetch_records("Math-tutor", "feedback")
     for _, row in df_fb.iterrows():
         st.info(
-          f"**{row['file_name']}**  \n"
-          f"[View]({row['link']})  \n"
+          f"**{row['file_name']} |"
+          f"[View]({row['link']})**\n"
           f"> {row['comment']}"
         )
 
@@ -52,10 +52,10 @@ def render_handouts(
     summary_df: pd.DataFrame
     ):
     tabs = st.tabs([
-        "📋 Official Info and Other Handouts",
-        "📝 Lessons & Summary"
+        "📝 Lessons & Summary",
+        "📋 Other Handouts"
     ])
     with tabs[0]:
-        show_feedback(role, cfg)
-    with tabs[1]:
         show_lessons_summary(lessons_df, summary_df)
+    with tabs[1]:
+        show_feedback(role, cfg)
