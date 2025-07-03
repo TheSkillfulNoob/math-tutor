@@ -149,7 +149,7 @@ def show_latest_results(scores_p1: pd.DataFrame, scores_p2: pd.DataFrame):
         
         c1, c2 = st.columns([0.35, 0.65])
         with c1:
-            st.subheader(f"{label} - Set {latest["Set"].split("-")[0]}")
+            st.subheader(f"Set {latest["Set"].split("-")[0]} - {label}")
             st.markdown(f"**Score:** {obt}/{mx} ({pct:.1f}%)")
             if label == "Paper 1":
                 st.markdown(f"**[A1]** {latest["A1_raw"]}/{latest["A1_max"]}; **[A2]** {latest["A2_raw"]}/{latest["A2_max"]}; **[B]** {latest["B_raw"]}/{latest["B_max"]}")
@@ -198,37 +198,46 @@ def show_topic_mastery(topics_df: pd.DataFrame):
     st.altair_chart(chart, use_container_width=True)
 
     st.markdown("---")
-    st.header("🗂 Chapters & Sub-topics by Strand")
-    # Define which chapter‐indexes belong in each strand (1-3, 4-7, 8-11, 12-14)
-    strand_order = ["Foundations", "Measures", "Algebra & Graphs", "Data Handling"]
-    strand_chapters = {
-        "Foundations":        [1, 2, 3],
-        "Measures":           [4, 5, 6, 7],
-        "Algebra & Graphs":   [8, 9, 10, 11],
-        "Data Handling":      [12, 13, 14],
-    }
+    st.header("🗂 Chapters & Sub-topics")
 
-    cols = st.columns(4)
-    for col, strand in zip(cols, strand_order):
-        with col:
-            st.subheader(strand)
-            color = STRAND_COLORS[strand]
+    # 1) Prepare helper maps
+    # TOPIC_MAP: idx → chapter name
+    # STRAND_MAP: idx → strand name
+    # STRAND_COLORS: strand → hex color
+    chapter_idxs = sorted(TOPIC_MAP.keys())  # [1,2,…,14]
 
-            for idx in strand_chapters[strand]:
+    # 2) Break into rows of 4
+    rows = [chapter_idxs[i : i+4] for i in range(0, len(chapter_idxs), 4)]
+    # e.g. [[1,2,3,4], [5,6,7,8], [9,10,11,12], [13,14]]
+
+    for row in rows:
+        cols = st.columns(4)
+        # pad the row to length 4 with None
+        for idx, col in zip(row + [None]*(4 - len(row)), cols):
+            with col:
+                if idx is None:
+                    # empty cell
+                    continue
+
+                # Chapter header styled in its strand colour
                 chapter_name = TOPIC_MAP[idx]
-                # Use an HTML‐styled label so the expander header is in the strand colour
+                strand       = STRAND_MAP[idx]
+                color        = STRAND_COLORS[strand]
                 label = (
                     f"<span style='font-weight:bold;color:{color};'>"
                     f"{idx}. {chapter_name}"
                     "</span>"
                 )
+
                 with st.expander(label, expanded=False):
-                    # pull all names (stored as topics) for this chapter
-                    subs = topics_df.loc[
-                        topics_df["index"] == idx, "topic"].tolist()
-                    for sub in subs:
-                        bullet = f"<span style='color:{color}'>&#9679;"
-                        st.markdown(f"{bullet} {sub}: {topics_df.loc[topics_df["index"] == idx, "rate"]}/ 7 </span>", unsafe_allow_html=True)
+                    # list each sub-item and its rate
+                    subs = topics_df[topics_df["index"] == idx]
+                    for _, sub in subs.iterrows():
+                        bullet = f"<span style='color:{color}'>&#9679;</span>"
+                        st.markdown(
+                            f"{bullet} {sub['sub_item']}: {sub['rate']}/7",
+                            unsafe_allow_html=True
+                        )
 
     st.markdown("---")
 
