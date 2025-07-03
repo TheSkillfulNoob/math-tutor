@@ -165,7 +165,7 @@ def show_topic_mastery(topics_df: pd.DataFrame):
 
     # 1) Prepare the averaged bar‐chart data
     df = topics_df.copy()
-    df["core_topic"] = df["index"].map(TOPIC_MAP)
+    df["core_topic"] = df["chapter"].map(TOPIC_MAP)
     df["strand"]     = df["chapter"].map(STRAND_MAP)
 
     avg = (
