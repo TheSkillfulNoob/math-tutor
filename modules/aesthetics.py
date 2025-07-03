@@ -215,8 +215,13 @@ def render_progress(
         df["Date"] = pd.to_datetime(df["Date"])
         df.sort_values("Date", inplace=True)
 
-    # Melt for section‐by‐section plotting
-    s1_secs = scores_p1.melt(
+    s1 = scores_p1.copy()
+    s1["A1_pct"] = s1["A1_raw"] / s1["A1_max"] * 100
+    s1["A2_pct"] = s1["A2_raw"] / s1["A2_max"] * 100
+    s1["B_pct"]  = s1["B_raw"]  / s1["B_max"]  * 100
+
+    # 2) Now melt *that* frame which actually has those columns
+    s1_secs = s1.melt(
         id_vars=["Date"],
         value_vars=["A1_pct","A2_pct","B_pct"],
         var_name="Section",
@@ -235,12 +240,18 @@ def render_progress(
         value_name="Pct"
     )
 
-    s2_secs = scores_p2.melt(
+    s2 = scores_p1.copy()
+    s2["A_pct"] = s2["A_raw"] / s2["A_max"] * 100
+    s2["B_pct"] = s2["B_raw"]  / s2["B_max"]  * 100
+
+    # 2) Now melt *that* frame which actually has those columns
+    s2_secs = s2.melt(
         id_vars=["Date"],
-        value_vars=["A_pct","B_pct"],
+        value_vars=["A1_pct","A2_pct","B_pct"],
         var_name="Section",
         value_name="Pct"
     )
+
     s2_tot  = scores_p2.assign(
         Total_pct=lambda d: (d["A_raw"]+d["B_raw"])
                            / (d["A_max"]+d["B_max"])
