@@ -149,7 +149,7 @@ def show_latest_results(scores_p1: pd.DataFrame, scores_p2: pd.DataFrame):
         
         c1, c2 = st.columns([0.35, 0.65])
         with c1:
-            st.subheader(f"{label}")
+            st.subheader(f"{label} - Set {latest["Set"].split("-")[0]}")
             st.markdown(f"**Score:** {obt}/{mx} ({pct:.1f}%)")
             if label == "Paper 1":
                 st.markdown(f"**[A1]** {latest["A1_raw"]}/{latest["A1_max"]}; **[A2]** {latest["A2_raw"]}/{latest["A2_max"]}; **[B]** {latest["B_raw"]}/{latest["B_max"]}")
@@ -160,42 +160,61 @@ def show_latest_results(scores_p1: pd.DataFrame, scores_p2: pd.DataFrame):
     st.markdown("---")
 
 def show_topic_mastery(topics_df: pd.DataFrame):
-    """Tab 2: your existing topic-mastery bar chart."""
+    """Tab 2: Bar chart of the 14 core topics, then an expandable list of subtopics."""
     st.header("📊 Topic Mastery")
+
+    # 1) Prepare the averaged bar‐chart data
     df = topics_df.copy()
     df["core_topic"] = df["index"].map(TOPIC_MAP)
     df["strand"]     = df["index"].map(STRAND_MAP)
-    avg = df.groupby(
-        ["index","core_topic","strand"], as_index=False
-    ).rate.mean()
+
+    avg = (
+        df
+        .groupby(["index","core_topic","strand"], as_index=False)
+        .rate.mean()
+    )
     order = [TOPIC_MAP[i] for i in sorted(TOPIC_MAP)]
 
     chart = (
         alt.Chart(avg)
            .mark_bar(cornerRadiusTopLeft=3, cornerRadiusTopRight=3)
            .encode(
-             x=alt.X(
-                 "core_topic:N",
-                 sort=order,
-                 axis=alt.Axis(labelAngle=-45)
-             ),
-             y=alt.Y(
-                 "rate:Q",
-                 title="Average Level (out of 7)",
-                 scale=alt.Scale(domain=[1, 7])       # ← fixed y‐axis
-             ),
-             color=alt.Color(
-                 "strand:N",
-                 scale=alt.Scale(
-                     domain=list(STRAND_COLORS.keys()),
-                     range=list(STRAND_COLORS.values())
-                 ),
-                 legend=alt.Legend(title="Strand")
+             x=alt.X("core_topic:N",
+                     sort=order,
+                     axis=alt.Axis(labelAngle=-45)),
+             y=alt.Y("rate:Q",
+                     title="Average Level (out of 7)",
+                     scale=alt.Scale(domain=[1,7])),
+             color=alt.Color("strand:N",
+               scale=alt.Scale(
+                 domain=list(STRAND_COLORS.keys()),
+                 range=list(STRAND_COLORS.values())
+               ),
+               legend=alt.Legend(title="Strand")
              )
            )
            .properties(height=350)
     )
     st.altair_chart(chart, use_container_width=True)
+
+    st.markdown("---")
+    st.header("🗂 Chapters & Sub-topics")
+
+    # 2) Build one expander per core topic
+    for idx in sorted(TOPIC_MAP):
+        chapter_name = TOPIC_MAP[idx]
+        strand       = STRAND_MAP[idx]
+        color        = STRAND_COLORS[strand]
+
+        # render the expander label in the strand colour
+        expander_label = f"<span style='font-weight:bold;color:{color};'>{chapter_name}</span>"
+        with st.expander(expander_label, expanded=False):
+            # list all sub_items under this chapter
+            subs = topics_df[topics_df["index"] == idx]["sub_item"].tolist()
+            for sub in subs:
+                bullet = f"<span style='color:{color}'>&#9679;</span>"
+                st.markdown(f"{bullet} {sub}", unsafe_allow_html=True)
+
     st.markdown("---")
 
 def show_lessons_summary(lessons_df: pd.DataFrame, feedback_df: pd.DataFrame):
