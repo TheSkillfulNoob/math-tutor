@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import os
 import gspread
 from gspread_dataframe import set_with_dataframe
 from google.oauth2.service_account import Credentials
@@ -53,3 +54,33 @@ def push_dataframe(sheet_name, ws_name, df):
 def append_record(sheet_name, ws_name, record: list):
     ws = _connect(sheet_name, ws_name)
     ws.append_row(record)
+
+def _init_drive():
+    gauth = GoogleAuth()
+    gauth.auth_method = "service"
+    gauth.credentials = ServiceAccountCredentials.from_json_keyfile_dict(
+        st.secrets["gcp_service_account"],
+        scopes=["https://www.googleapis.com/auth/drive"]
+    )
+    return GoogleDrive(gauth)
+
+def upload_file_to_folder(folder_id: str, uploaded_file) -> str:
+    """
+    uploaded_file is the Streamlit UploadedFile from st.file_uploader.
+    Returns the new Drive file ID.
+    """
+    drive = _init_drive()
+    # write bytes to a temp file
+    tmp = tempfile.NamedTemporaryFile(delete=False, suffix=os.path.splitext(uploaded_file.name)[1])
+    tmp.write(uploaded_file.getbuffer())
+    tmp.close()
+
+    metadata = {
+        "title": uploaded_file.name,
+        "parents": [{"id": folder_id}],
+    }
+    f = drive.CreateFile(metadata)
+    f.SetContentFile(tmp.name)
+    f.Upload()
+    os.unlink(tmp.name)
+    return f["id"]
