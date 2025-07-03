@@ -152,13 +152,12 @@ def show_latest_results(scores_p1: pd.DataFrame, scores_p2: pd.DataFrame):
             st.subheader(f"{label}")
             st.markdown(f"**Score:** {obt}/{mx} ({pct:.1f}%)")
             if label == "Paper 1":
-                st.markdown(f"**Sections:** \n\n**[A1]** {latest["A1_raw"]}/{latest["A1_max"]}; **[A2]** {latest["A2_raw"]}/{latest["A2_max"]}; **[B]** {latest["B_raw"]}/{latest["B_max"]}")
+                st.markdown(f"**[A1]** {latest["A1_raw"]}/{latest["A1_max"]}; **[A2]** {latest["A2_raw"]}/{latest["A2_max"]}; **[B]** {latest["B_raw"]}/{latest["B_max"]}")
             else:
-                st.markdown(f"**Sections:** \n\n**[A]** {latest["A_raw"]}/{latest["A_max"]}; **[B]** {latest["B_raw"]}/{latest["B_max"]}")
+                st.markdown(f"**[A]** {latest["A_raw"]}/{latest["A_max"]}; **[B]** {latest["B_raw"]}/{latest["B_max"]}")
         with c2:
             st.info(f"**Comment:**\n\n{latest.get("Comments", "_No comment_")}")
     st.markdown("---")
-
 
 def show_topic_mastery(topics_df: pd.DataFrame):
     """Tab 2: your existing topic-mastery bar chart."""
@@ -173,23 +172,31 @@ def show_topic_mastery(topics_df: pd.DataFrame):
 
     chart = (
         alt.Chart(avg)
-        .mark_bar(cornerRadiusTopLeft=3, cornerRadiusTopRight=3)
-        .encode(
-            x=alt.X("core_topic:N", sort=order, axis=alt.Axis(labelAngle=-45)),
-            y=alt.Y("rate:Q", title="Average Level (out of 7)"),
-            color=alt.Color("strand:N",
-                scale=alt.Scale(
-                domain=list(STRAND_COLORS.keys()),
-                range=list(STRAND_COLORS.values())
-                ),
-            legend=alt.Legend(title="Strand")
+           .mark_bar(cornerRadiusTopLeft=3, cornerRadiusTopRight=3)
+           .encode(
+             x=alt.X(
+                 "core_topic:N",
+                 sort=order,
+                 axis=alt.Axis(labelAngle=-45)
+             ),
+             y=alt.Y(
+                 "rate:Q",
+                 title="Average Level (out of 7)",
+                 scale=alt.Scale(domain=[1, 7])       # ← fixed y‐axis
+             ),
+             color=alt.Color(
+                 "strand:N",
+                 scale=alt.Scale(
+                     domain=list(STRAND_COLORS.keys()),
+                     range=list(STRAND_COLORS.values())
+                 ),
+                 legend=alt.Legend(title="Strand")
+             )
            )
-        )
-        .properties(height=350)
+           .properties(height=350)
     )
     st.altair_chart(chart, use_container_width=True)
     st.markdown("---")
-
 
 def show_lessons_summary(lessons_df: pd.DataFrame, feedback_df: pd.DataFrame):
     """Tab 3: two-column lessons & summary."""
