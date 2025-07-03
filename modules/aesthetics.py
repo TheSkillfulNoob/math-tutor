@@ -198,22 +198,38 @@ def show_topic_mastery(topics_df: pd.DataFrame):
     st.altair_chart(chart, use_container_width=True)
 
     st.markdown("---")
-    st.header("🗂 Chapters & Sub-topics")
+    st.header("🗂 Chapters & Sub-topics by Strand")
+    # Define which chapter‐indexes belong in each strand (1-3, 4-7, 8-11, 12-14)
+    strand_order = ["Foundations", "Measures", "Algebra & Graphs", "Data Handling"]
+    strand_chapters = {
+        "Foundations":        [1, 2, 3],
+        "Measures":           [4, 5, 6, 7],
+        "Algebra & Graphs":   [8, 9, 10, 11],
+        "Data Handling":      [12, 13, 14],
+    }
 
-    # 2) Build one expander per core topic
-    for idx in sorted(TOPIC_MAP):
-        chapter_name = TOPIC_MAP[idx]
-        strand       = STRAND_MAP[idx]
-        color        = STRAND_COLORS[strand]
+    cols = st.columns(4)
+    for col, strand in zip(cols, strand_order):
+        with col:
+            st.subheader(strand)
+            color = STRAND_COLORS[strand]
 
-        # render the expander label in the strand colour
-        expander_label = f"<span style='font-weight:bold;color:{color};'>{chapter_name}</span>"
-        with st.expander(expander_label, expanded=False):
-            # list all sub_items under this chapter
-            subs = topics_df[topics_df["chapter"] == idx]["index"].tolist()
-            for sub in subs:
-                bullet = f"<span style='color:{color}'>&#9679;</span>"
-                st.markdown(f"{bullet} {sub}", unsafe_allow_html=True)
+            for idx in strand_chapters[strand]:
+                chapter_name = TOPIC_MAP[idx]
+                # Use an HTML‐styled label so the expander header is in the strand colour
+                label = (
+                    f"<span style='font-weight:bold;color:{color};'>"
+                    f"{idx}. {chapter_name}"
+                    "</span>"
+                )
+                with st.expander(label, expanded=False):
+                    # pull all sub_items for this chapter
+                    subs = topics_df.loc[
+                        topics_df["index"] == idx, "sub_item"
+                    ].tolist()
+                    for sub in subs:
+                        bullet = f"<span style='color:{color}'>&#9679;</span>"
+                        st.markdown(f"{bullet} {sub}", unsafe_allow_html=True)
 
     st.markdown("---")
 
