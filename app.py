@@ -20,7 +20,7 @@ df_feedback = fetch_records(sheet, "feedback")
 # Quote + weakest + countdown
 aesthetics.show_weekly_quote(df_quotes, df_topics)
 
-tab1, tab2, tab3 = st.tabs(["✍️ Exercises","💯 Progress","📄 Docs"])
+tab1, tab2, tab3 = st.tabs(["✍️ Mock Papers","💯 Progress","📄 Docs"])
 with tab1:
     paper_system.render(role, cfg)
 with tab2:
