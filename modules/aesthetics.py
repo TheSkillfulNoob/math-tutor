@@ -210,7 +210,7 @@ def show_topic_mastery(topics_df: pd.DataFrame):
         expander_label = f"<span style='font-weight:bold;color:{color};'>{chapter_name}</span>"
         with st.expander(expander_label, expanded=False):
             # list all sub_items under this chapter
-            subs = topics_df[topics_df["index"] == idx]["sub_item"].tolist()
+            subs = topics_df[topics_df["chapter"] == idx]["index"].tolist()
             for sub in subs:
                 bullet = f"<span style='color:{color}'>&#9679;</span>"
                 st.markdown(f"{bullet} {sub}", unsafe_allow_html=True)
