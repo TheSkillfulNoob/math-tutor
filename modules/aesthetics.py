@@ -223,13 +223,12 @@ def show_topic_mastery(topics_df: pd.DataFrame):
                     "</span>"
                 )
                 with st.expander(label, expanded=False):
-                    # pull all sub_items for this chapter
+                    # pull all names (stored as topics) for this chapter
                     subs = topics_df.loc[
-                        topics_df["index"] == idx, "sub_item"
-                    ].tolist()
+                        topics_df["index"] == idx, "topic"].tolist()
                     for sub in subs:
-                        bullet = f"<span style='color:{color}'>&#9679;</span>"
-                        st.markdown(f"{bullet} {sub}", unsafe_allow_html=True)
+                        bullet = f"<span style='color:{color}'>&#9679;"
+                        st.markdown(f"{bullet} {sub}: {topics_df.loc[topics_df["index"] == idx, "rate"]}/ 7 </span>", unsafe_allow_html=True)
 
     st.markdown("---")
 
