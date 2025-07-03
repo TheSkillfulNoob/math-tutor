@@ -201,32 +201,51 @@ def render_progress(
     st.altair_chart(topic_chart, use_container_width=True)
 
     # Paper 1
-    st.subheader("Paper 1: Section % Over Time")
+    # — Paper 1 section %
     s1 = scores_p1.copy()
     s1["Date"] = pd.to_datetime(s1["Date"])
     s1 = s1.sort_values("Date")
-    # columns are now A1_pct, A2_pct, B_pct
-    s1_line = s1.set_index("Date")[["A1_pct","A2_pct","B_pct"]]
-    st.line_chart(s1_line, use_container_width=True)
+    # compute section‐% on the fly
+    s1["A1_pct"] = s1["A1_raw"] / s1["A1_max"] * 100
+    s1["A2_pct"] = s1["A2_raw"] / s1["A2_max"] * 100
+    s1["B_pct"]  = s1["B_raw"]  / s1["B_max"]  * 100
 
-    st.subheader("Paper 1: Total % + 5-exam MA")
+    st.subheader("Paper 1: Section % Over Time")
+    st.line_chart(
+        s1.set_index("Date")[["A1_pct","A2_pct","B_pct"]],
+        use_container_width=True
+    )
+
+    st.subheader("Paper 1: Total % + 5-Exam MA")
+    s1["Total_pct"] = (
+        s1[["A1_raw","A2_raw","B_raw"]].sum(axis=1) /
+        s1[["A1_max","A2_max","B_max"]].sum(axis=1)
+    ) * 100
     s1["MA5"] = s1["Total_pct"].rolling(5, min_periods=1).mean()
     st.line_chart(
         s1.set_index("Date")[["Total_pct","MA5"]],
         use_container_width=True
     )
 
-    # Paper 2
-    st.subheader("Paper 2: Section % Over Time")
+    # — Paper 2 section %
     s2 = scores_p2.copy()
     s2["Date"] = pd.to_datetime(s2["Date"])
     s2 = s2.sort_values("Date")
+    s2["A_pct"] = s2["A_raw"] / s2["A_max"] * 100
+    s2["B_pct"] = s2["B_raw"] / s2["B_max"] * 100
+
+    st.subheader("Paper 2: Section % Over Time")
     st.line_chart(
         s2.set_index("Date")[["A_pct","B_pct"]],
         use_container_width=True
     )
 
-    st.subheader("Paper 2: Total % + 5-exam MA")
+    st.subheader("Paper 2: Total % + 5-Exam MA")
+    s2["Total_pct"] = (
+        s2["A_raw"] + s2["B_raw"]
+    ) / (
+        s2["A_max"] + s2["B_max"]
+    ) * 100
     s2["MA5"] = s2["Total_pct"].rolling(5, min_periods=1).mean()
     st.line_chart(
         s2.set_index("Date")[["Total_pct","MA5"]],
