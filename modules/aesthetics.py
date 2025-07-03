@@ -173,6 +173,7 @@ def show_topic_mastery(topics_df: pd.DataFrame):
         .groupby(["index","core_topic","strand"], as_index=False)
         .rate.mean()
     )
+    st.info(avg)
     order = [TOPIC_MAP[i] for i in sorted(TOPIC_MAP)]
 
     chart = (
@@ -216,7 +217,6 @@ def show_topic_mastery(topics_df: pd.DataFrame):
         for idx, col in zip(row + [None]*(4 - len(row)), cols):
             with col:
                 if idx is None:
-                    # empty cell
                     continue
 
                 # Chapter header styled in its strand colour
@@ -229,16 +229,15 @@ def show_topic_mastery(topics_df: pd.DataFrame):
                     "</span>"
                 )
 
-                with st.expander(label, expanded=False):
+                st.subheader(label)
+                # with st.expander(label, expanded=False):
                     # list each sub-item and its rate
-                    subs = topics_df[topics_df["index"] == idx]
-                    for _, sub in subs.iterrows():
-                        bullet = f"<span style='color:{color}'>&#9679;</span>"
-                        st.markdown(
-                            f"{bullet} {sub['sub_item']}: {sub['rate']}/7",
-                            unsafe_allow_html=True
-                        )
-
+                subs = topics_df[topics_df["index"] == idx]
+                text = ""
+                bullet = f"<span style='color:{color}'>&#9679;</span>"
+                for _, sub in subs.iterrows():
+                    text.append (f"{bullet} {sub['topic']}: {sub['rate']}/ 7")
+                st.info("\n\n".join(text))
     st.markdown("---")
 
 def show_lessons_summary(lessons_df: pd.DataFrame, feedback_df: pd.DataFrame):
