@@ -165,7 +165,7 @@ def render_progress(
     st.subheader("Paper 1")
     c1, c2 = st.columns([0.35, 0.65])
     with c1:
-        st.markdown(f"**Score:** {frac1}/{max1}  \n**Pct:** {pct1:.1f}%\n**By Section**:\nA1 - {latest_p1["A1_raw"]}/{latest_p1["A1_max"]}; A2 - {latest_p1["A2_raw"]}/{latest_p1["A2_max"]}; B - {latest_p1["B_raw"]}/{latest_p1["B_max"]}")
+        st.markdown(f"**Score:** {frac1}/{max1} ({pct1:.1f}%) \n**By Section**:\n[A1] {latest_p1["A1_raw"]}/{latest_p1["A1_max"]}; \t[A2] {latest_p1["A2_raw"]}/{latest_p1["A2_max"]}; \t[B] {latest_p1["B_raw"]}/{latest_p1["B_max"]}")
     with c2:
         st.markdown("**Comment:**") 
         st.write(latest_p1["Comments"] or "_No comment_")
@@ -179,7 +179,7 @@ def render_progress(
     st.subheader("Paper 2")
     c3, c4 = st.columns([0.35, 0.65])
     with c3:
-        st.markdown(f"**Score:** {frac2}/{max2}  \n**Pct:** {pct2:.1f}%\n**By Section\n**:\nA - {latest_p2["A_raw"]}/{latest_p2["A_max"]}; B - {latest_p2["B_raw"]}/{latest_p2["B_max"]}")
+        st.markdown(f"**Score:** {frac2}/{max2} ({pct2:.1f}%) \n**By Section\n**:\n[A] {latest_p2["A_raw"]}/{latest_p2["A_max"]}; \t[B] {latest_p2["B_raw"]}/{latest_p2["B_max"]}")
     with c4:
         st.markdown("**Comment:**") 
         st.write(latest_p2["Comments"] or "_No comment_")
