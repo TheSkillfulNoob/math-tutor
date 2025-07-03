@@ -166,7 +166,7 @@ def show_topic_mastery(topics_df: pd.DataFrame):
     # 1) Prepare the averaged bar‐chart data
     df = topics_df.copy()
     df["core_topic"] = df["index"].map(TOPIC_MAP)
-    df["strand"]     = df["index"].map(STRAND_MAP)
+    df["strand"]     = df["chapter"].map(STRAND_MAP)
 
     avg = (
         df
@@ -224,8 +224,8 @@ def show_topic_mastery(topics_df: pd.DataFrame):
                 strand       = STRAND_MAP[idx]
                 color        = STRAND_COLORS[strand]
                 label = (
-                    f"<span style='font-weight:bold;color:{color};'>"
-                    f"{idx}. {chapter_name}"
+                    f"<span style='font-weight:bold;color:{color}'>"
+                    f"{idx} - {chapter_name}"
                     "</span>"
                 )
 
