@@ -210,39 +210,83 @@ def render_progress(
     )
     st.altair_chart(topic_chart, use_container_width=True)
 
-    
+    # Prepare each scores DF
+    for df in (scores_p1, scores_p2):
+        df["Date"] = pd.to_datetime(df["Date"])
+        df.sort_values("Date", inplace=True)
 
-    st.subheader("Paper 1: Section % Over Time")
-    st.line_chart(
-        s1.set_index("Date")[["A1_pct","A2_pct","B_pct"]],
-        use_container_width=True
+    # Melt for section‐by‐section plotting
+    s1_secs = scores_p1.melt(
+        id_vars=["Date"],
+        value_vars=["A1_pct","A2_pct","B_pct"],
+        var_name="Section",
+        value_name="Pct"
+    )
+    s1_tot  = scores_p1.assign(
+        Total_pct=lambda d: d[["A1_raw","A2_raw","B_raw"]].sum(1)
+                           / d[["A1_max","A2_max","B_max"]].sum(1)
+                           * 100
+    ).assign(
+        MA5=lambda d: d["Total_pct"].rolling(5,1).mean()
+    ).melt(
+        id_vars=["Date"],
+        value_vars=["Total_pct","MA5"],
+        var_name="Metric",
+        value_name="Pct"
     )
 
-    st.subheader("Paper 1: Total % + 5-Exam MA")
-    s1["Total_pct"] = (
-        s1[["A1_raw","A2_raw","B_raw"]].sum(axis=1) /
-        s1[["A1_max","A2_max","B_max"]].sum(axis=1)
-    ) * 100
-    s1["MA5"] = s1["Total_pct"].rolling(5, min_periods=1).mean()
-    st.line_chart(
-        s1.set_index("Date")[["Total_pct","MA5"]],
-        use_container_width=True
+    s2_secs = scores_p2.melt(
+        id_vars=["Date"],
+        value_vars=["A_pct","B_pct"],
+        var_name="Section",
+        value_name="Pct"
     )
-    
-    st.subheader("Paper 2: Section % Over Time")
-    st.line_chart(
-        s2.set_index("Date")[["A_pct","B_pct"]],
-        use_container_width=True
+    s2_tot  = scores_p2.assign(
+        Total_pct=lambda d: (d["A_raw"]+d["B_raw"])
+                           / (d["A_max"]+d["B_max"])
+                           * 100
+    ).assign(
+        MA5=lambda d: d["Total_pct"].rolling(5,1).mean()
+    ).melt(
+        id_vars=["Date"],
+        value_vars=["Total_pct","MA5"],
+        var_name="Metric",
+        value_name="Pct"
     )
 
-    st.subheader("Paper 2: Total % + 5-Exam MA")
-    s2["Total_pct"] = (
-        s2["A_raw"] + s2["B_raw"]
-    ) / (
-        s2["A_max"] + s2["B_max"]
-    ) * 100
-    s2["MA5"] = s2["Total_pct"].rolling(5, min_periods=1).mean()
-    st.line_chart(
-        s2.set_index("Date")[["Total_pct","MA5"]],
-        use_container_width=True
-    )
+    # Build a helper to make an Altair chart
+    def make_chart(df_long, color_field, title):
+        return (
+            alt.Chart(df_long)
+               .mark_line(point=True, size=3)   # point=True draws dots
+               .encode(
+                   x=alt.X("Date:T", title=None),
+                   y=alt.Y("Pct:Q",
+                           scale=alt.Scale(domain=[0,100]),
+                           title="Percent"),
+                   **{color_field:alt.Color(f"{color_field}:N")}
+               )
+               .properties(height=250, width="container")
+               .interactive()  # allow tooltip/zoom if you like
+        )
+
+    # Render side by side
+    col1, col2 = st.columns(2)
+
+    # Paper 1
+    with col1:
+        st.subheader("📑 Paper 1")
+        st.markdown("**Section % Over Time**")
+        st.altair_chart(make_chart(s1_secs, "Section", "Paper 1 Sections"), use_container_width=True)
+
+        st.markdown("**Total % & 5-Exam MA**")
+        st.altair_chart(make_chart(s1_tot, "Metric", "Paper 1 Total"), use_container_width=True)
+
+    # Paper 2
+    with col2:
+        st.subheader("📑 Paper 2")
+        st.markdown("**Section % Over Time**")
+        st.altair_chart(make_chart(s2_secs, "Section", "Paper 2 Sections"), use_container_width=True)
+
+        st.markdown("**Total % & 5-Exam MA**")
+        st.altair_chart(make_chart(s2_tot, "Metric", "Paper 2 Total"), use_container_width=True)
