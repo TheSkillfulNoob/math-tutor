@@ -118,7 +118,7 @@ def _add_p1_score(config):
             total_max = a1_max + a2_max + b_max
             total_pct = total_obt / total_max * 100
 
-            ws = init_worksheet(config, "scores_p1")
+            ws = init_worksheet("scores_p1")
             ws.append_row([
                 d.isoformat(),
                 set_name,
@@ -157,7 +157,7 @@ def _add_p2_score(config):
             total_max = a_max + b_max
             total_pct = round(total_obt / total_max * 100, 4)
 
-            ws = init_worksheet(config, "scores_p2")
+            ws = init_worksheet("scores_p2")
             ws.append_row([
                 d.isoformat(),
                 set_name,
