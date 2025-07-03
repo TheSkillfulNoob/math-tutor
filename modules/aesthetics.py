@@ -224,9 +224,9 @@ def show_topic_mastery(topics_df: pd.DataFrame):
                 strand       = STRAND_MAP[idx]
                 color        = STRAND_COLORS[strand]
                 label = (
-                    f"<span style='font-weight:bold;color:{color}'>"
+                    #f"<span style='font-weight:bold;color:{color}'>"
                     f"{idx} - {chapter_name}"
-                    "</span>"
+                    #"</span>"
                 )
 
                 st.subheader(label)
