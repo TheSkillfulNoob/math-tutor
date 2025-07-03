@@ -169,17 +169,20 @@ def show_topic_mastery(topics_df: pd.DataFrame):
     order = [TOPIC_MAP[i] for i in sorted(TOPIC_MAP)]
 
     chart = (
-      alt.Chart(avg)
-         .mark_bar(cornerRadiusTopLeft=3, cornerRadiusTopRight=3)
-         .encode(
-           x=alt.X("core_topic:N", sort=order, axis=alt.Axis(labelAngle=-45)),
-           y=alt.Y("rate:Q", title="Average Level (out of 7)"),
-           color=alt.Color("strand:N",
-             scale=alt.Scale(list(STRAND_COLORS.values()), domain=list(STRAND_COLORS.keys())),
-             legend=alt.Legend(title="Strand")
+        alt.Chart(avg)
+        .mark_bar(cornerRadiusTopLeft=3, cornerRadiusTopRight=3)
+        .encode(
+            x=alt.X("core_topic:N", sort=order, axis=alt.Axis(labelAngle=-45)),
+            y=alt.Y("rate:Q", title="Average Level (out of 7)"),
+            color=alt.Color("strand:N",
+                scale=alt.Scale(
+                domain=list(STRAND_COLORS.keys()),
+                range=list(STRAND_COLORS.values())
+                ),
+            legend=alt.Legend(title="Strand")
            )
-         )
-         .properties(height=350)
+        )
+        .properties(height=350)
     )
     st.altair_chart(chart, use_container_width=True)
     st.markdown("---")
