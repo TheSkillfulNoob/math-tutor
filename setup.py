@@ -28,7 +28,7 @@ def authenticate():
             st.success("Access granted (Student)!")
             st.rerun()
         else:
-            st.sidebar.error("Incorrect password.")
+            st.error("Incorrect password.") #st.sidebar.error?
 
     # 4) If we reach here, we’re not yet authenticated—stop the script
     st.stop()

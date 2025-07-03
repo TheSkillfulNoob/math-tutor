@@ -146,15 +146,15 @@ def show_latest_results(scores_p1: pd.DataFrame, scores_p2: pd.DataFrame):
             obt = latest["A_raw"] + latest["B_raw"]
             mx  = latest["A_max"] + latest["B_max"]
         pct = latest["Total_pct"]
-
-        st.subheader(f"{label}")
+        
         c1, c2 = st.columns([0.35, 0.65])
         with c1:
+            st.subheader(f"{label}")
             st.markdown(f"**Score:** {obt}/{mx} ({pct:.1f}%)")
             if label == "Paper 1":
-                st.markdown(f"**Sections:** [A1]{latest["A1_raw"]}/{latest["A1_max"]}; [A2]{latest["A2_raw"]}/{latest["A2_max"]}; [B]{latest["B_raw"]}/{latest["B_max"]}")
+                st.markdown(f"**Sections:** \n\n**[A1]** {latest["A1_raw"]}/{latest["A1_max"]}; **[A2]** {latest["A2_raw"]}/{latest["A2_max"]}; **[B]** {latest["B_raw"]}/{latest["B_max"]}")
             else:
-                st.markdown(f"**Sections:** [A]{latest["A_raw"]}/{latest["A_max"]}; [B]{latest["B_raw"]}/{latest["B_max"]}")
+                st.markdown(f"**Sections:** \n\n**[A]** {latest["A_raw"]}/{latest["A_max"]}; **[B]** {latest["B_raw"]}/{latest["B_max"]}")
         with c2:
             st.info(f"**Comment:**\n\n{latest.get("Comments", "_No comment_")}")
     st.markdown("---")
@@ -191,42 +191,36 @@ def show_topic_mastery(topics_df: pd.DataFrame):
     st.markdown("---")
 
 
-def show_lessons_feedback(lessons_df: pd.DataFrame, feedback_df: pd.DataFrame):
-    """Tab 3: two-column lessons & feedback."""
-    st.header("📝 Lessons & Key Points / Feedback")
-
-    col1, col2 = st.columns(2)
-
-    with col1:
-        st.subheader("Lessons")
-        # sort descending by date
-        for _, r in lessons_df.sort_values("Date", ascending=False).iterrows():
-            st.markdown(f"**{r['Date']} — {r['Topic']}**")
+def show_lessons_summary(lessons_df: pd.DataFrame, feedback_df: pd.DataFrame):
+    """Tab 3: two-column lessons & summary."""
+    st.header("📝 Lessons & Key Points / Summary")
+    for _, r in lessons_df.sort_values("Date", ascending=False).iterrows():
+        col1, col2 = st.columns([0.4, 0.6])
+        with col1:
+            st.subheader(f"{r['Date']}")
+            st.markdown(f"**{r['Topic']}**")
             st.write(r["Summary"])
-            st.markdown("---")
-
-    with col2:
-        st.subheader("Feedback")
-        for _, r in feedback_df.sort_values("Date", ascending=False).iterrows():
-            st.markdown(f"**{r['Date']}**")
-            st.write(r["Comments"])
-            st.markdown("---")
+        with col2:
+            st.subheader("Resources/ Reminders")
+            st.markdown("TODO implement: Slides and Exercises")
+            st.write(r["Feedback"])
+        st.markdown("---")
 
 def render_progress(
     topics_df: pd.DataFrame,
     scores_p1: pd.DataFrame,
     scores_p2: pd.DataFrame,
     lessons_df: pd.DataFrame,
-    feedback_df: pd.DataFrame
+    summary_df: pd.DataFrame
 ):
     tabs = st.tabs([
         "📋 Latest Results",
         "📊 Topic Mastery",
-        "📝 Lessons & Feedback"
+        "📝 Lessons & Summary"
     ])
     with tabs[0]:
         show_latest_results(scores_p1, scores_p2)
     with tabs[1]:
         show_topic_mastery(topics_df)
     with tabs[2]:
-        show_lessons_feedback(lessons_df, feedback_df)
+        show_lessons_summary(lessons_df, summary_df)
