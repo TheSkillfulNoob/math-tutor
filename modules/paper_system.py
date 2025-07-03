@@ -67,25 +67,24 @@ def render(role: str, config: dict):
 
 def _parse_mark(mark_str: str, hard_max: int):
     """
-    Parse “obtained/maximum” → floats (obt, pct).  
-    Returns (obt, pct, None) on success; (None, None, error_msg) on failure.
+    Parse “obtained/maximum” → (obtained, maximum, pct, error_msg).
     """
-    if not isinstance(mark_str, str) or "/" not in mark_str:
-        return None, None, "❌ Format must be “obtained/maximum”"
+    if "/" not in mark_str:
+        return None, None, None, "❌ Use format “num/num”, e.g. 21/31"
     parts = mark_str.split("/")
     if len(parts) != 2:
-        return None, None, "❌ Use exactly one slash: “21/31”"
+        return None, None, None, "❌ Exactly one slash allowed"
     try:
         obt = int(parts[0].strip())
         mx  = int(parts[1].strip())
     except ValueError:
-        return None, None, "❌ Both parts must be integers"
+        return None, None, None, "❌ Both values must be integers"
     if mx > hard_max:
-        return None, None, f"❌ Maximum cannot exceed {hard_max}"
+        return None, None, None, f"❌ Section max cannot exceed {hard_max}"
     if obt < 0 or obt > mx:
-        return None, None, f"❌ Obtained must be between 0 and {mx}"
+        return None, None, None, f"❌ Obtained must be between 0 and {mx}"
     pct = obt / mx * 100
-    return obt, pct, None
+    return obt, mx, pct, None
 
 def _add_p1_score(config):
     st.markdown("### 📝 Tutor: Add Paper 1 Score (format “obtained/maximum”)")
@@ -100,33 +99,32 @@ def _add_p1_score(config):
         with c_a2:
             a2_str = st.text_input("A2 (max 35)", placeholder="e.g. 30/35")
         with c_b:
-            b_str  = st.text_input("B  (max 35)", placeholder="e.g. 25/35")
-
+            b_str  = st.text_input("B (max 35)", placeholder="e.g. 25/35")
         comments = st.text_area("Comments")
 
         if st.form_submit_button("Submit P1"):
-            # parse & validate each
-            a1_obt, a1_pct, err1 = _parse_mark(a1_str, 35)
-            a2_obt, a2_pct, err2 = _parse_mark(a2_str, 35)
-            b_obt,  b_pct,  err3 = _parse_mark(b_str,  35)
+            # parse each
+            a1_obt, a1_max, a1_pct, err1 = _parse_mark(a1_str, 35)
+            a2_obt, a2_max, a2_pct, err2 = _parse_mark(a2_str, 35)
+            b_obt,  b_max,  b_pct,  err3 = _parse_mark(b_str,  35)
             errs = [e for e in (err1,err2,err3) if e]
             if errs:
                 for e in errs:
                     st.error(e)
                 return
 
-            # compute overall percentage
+            # compute total % from sums of raw & max
             total_obt = a1_obt + a2_obt + b_obt
-            total_max = 35*3
+            total_max = a1_max + a2_max + b_max
             total_pct = total_obt / total_max * 100
 
             ws = init_worksheet(config, "scores_p1")
             ws.append_row([
                 d.isoformat(),
                 set_name,
-                f"{a1_obt}/{35}", round(a1_pct,1),
-                f"{a2_obt}/{35}", round(a2_pct,1),
-                f"{b_obt}/{35}",  round(b_pct,1),
+                a1_obt, a1_max,
+                a2_obt, a2_max,
+                b_obt,  b_max,
                 round(total_pct,1),
                 comments or ""
             ])
@@ -144,12 +142,11 @@ def _add_p2_score(config):
             a_str = st.text_input("A (max 30)", placeholder="e.g. 24/30")
         with c_b:
             b_str = st.text_input("B (max 15)", placeholder="e.g. 12/15")
-
         comments = st.text_area("Comments")
 
         if st.form_submit_button("Submit P2"):
-            a_obt, a_pct, err1 = _parse_mark(a_str, 30)
-            b_obt, b_pct, err2 = _parse_mark(b_str, 15)
+            a_obt, a_max, a_pct, err1 = _parse_mark(a_str, 30)
+            b_obt, b_max, b_pct, err2 = _parse_mark(b_str, 15)
             errs = [e for e in (err1,err2) if e]
             if errs:
                 for e in errs:
@@ -157,15 +154,15 @@ def _add_p2_score(config):
                 return
 
             total_obt = a_obt + b_obt
-            total_max = 30 + 15
-            total_pct = total_obt / total_max * 100
+            total_max = a_max + b_max
+            total_pct = round(total_obt / total_max * 100, 4)
 
             ws = init_worksheet(config, "scores_p2")
             ws.append_row([
                 d.isoformat(),
                 set_name,
-                f"{a_obt}/{30}", round(a_pct,1),
-                f"{b_obt}/{15}", round(b_pct,1),
+                a_obt, a_max,
+                b_obt, b_max,
                 round(total_pct,1),
                 comments or ""
             ])
