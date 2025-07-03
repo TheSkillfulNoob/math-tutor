@@ -120,12 +120,12 @@ def _add_p1_score(config):
 
             ws = init_worksheet("scores_p1")
             ws.append_row([
-                d.isoformat(),
+                d.strftime("%m/%d/%Y"),
                 set_name,
                 a1_obt, a1_max,
                 a2_obt, a2_max,
                 b_obt,  b_max,
-                round(total_pct,1),
+                round(total_pct, 2),
                 comments or ""
             ])
             st.success("✅ Paper 1 percentage recorded.")
@@ -155,15 +155,15 @@ def _add_p2_score(config):
 
             total_obt = a_obt + b_obt
             total_max = a_max + b_max
-            total_pct = round(total_obt / total_max * 100, 4)
+            total_pct = total_obt / total_max * 100
 
             ws = init_worksheet("scores_p2")
             ws.append_row([
-                d.isoformat(),
+                d.strftime("%m/%d/%Y"),
                 set_name,
                 a_obt, a_max,
                 b_obt, b_max,
-                round(total_pct,1),
+                round(total_pct, 2),
                 comments or ""
             ])
             st.success("✅ Paper 2 percentage recorded.")

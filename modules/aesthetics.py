@@ -172,8 +172,57 @@ def render_progress(
     scores_p1: pd.DataFrame,
     scores_p2: pd.DataFrame
 ):
-    st.header("Progress Tracker")
+    st.header("Progress Tracker")    
+    # ── Latest Results & Comments ──
+    st.markdown("---")
+    st.header("📋 Latest Paper Results & Feedback")
+    
+    # Paper 1
+    # — Paper 1 section %
+    s1 = scores_p1.copy()
+    s1["Date"] = pd.to_datetime(s1["Date"])
+    s1 = s1.sort_values("Date")
+    # compute section‐% on the fly
+    s1["A1_pct"] = s1["A1_raw"] / s1["A1_max"] * 100
+    s1["A2_pct"] = s1["A2_raw"] / s1["A2_max"] * 100
+    s1["B_pct"]  = s1["B_raw"]  / s1["B_max"]  * 100
+    
+    # — Paper 2 section %
+    s2 = scores_p2.copy()
+    s2["Date"] = pd.to_datetime(s2["Date"])
+    s2 = s2.sort_values("Date")
+    s2["A_pct"] = s2["A_raw"] / s2["A_max"] * 100
+    s2["B_pct"] = s2["B_raw"] / s2["B_max"] * 100
+    
 
+    # Paper 1 latest
+    latest_p1 = s1.iloc[-1]  # since s1 is sorted by Date
+    frac1 = int(latest_p1["A1_raw"] + latest_p1["A2_raw"] + latest_p1["B_raw"])
+    max1  = int(latest_p1["A1_max"] + latest_p1["A2_max"] + latest_p1["B_max"])
+    pct1  = latest_p1["Total_pct"]
+
+    st.subheader("Paper 1")
+    c1, c2 = st.columns([0.35, 0.65])
+    with c1:
+        st.markdown(f"**Score:** {frac1}/{max1}  \n**Pct:** {pct1:.1f}%\n**By Section**:\nA1 - {latest_p1["A1_raw"]}/{latest_p1["A1_max"]}; A2 - {latest_p1["A2_raw"]}/{latest_p1["A2_max"]}; B - {latest_p1["B_raw"]}/{latest_p1["B_max"]}")
+    with c2:
+        st.markdown("**Comment:**") 
+        st.write(latest_p1["Comments"] or "_No comment_")
+
+    # Paper 2 latest
+    latest_p2 = s2.iloc[-1]
+    frac2 = int(latest_p2["A_raw"] + latest_p2["B_raw"])
+    max2  = int(latest_p2["A_max"] + latest_p2["B_max"])
+    pct2  = latest_p2["Total_pct"]
+
+    st.subheader("Paper 2")
+    c3, c4 = st.columns([0.35, 0.65])
+    with c3:
+        st.markdown(f"**Score:** {frac2}/{max2}  \n**Pct:** {pct2:.1f}%\n**By Section\n**:\nA - {latest_p2["A_raw"]}/{latest_p2["A_max"]}; B - {latest_p2["B_raw"]}/{latest_p2["B_max"]}")
+    with c4:
+        st.markdown("**Comment:**") 
+        st.write(latest_p2["Comments"] or "_No comment_")
+    
     # ── 1) Topic-mastery chart (unchanged) ──
     df = topics_df.copy()
     df["core_topic"] = df["index"].map(TOPIC_MAP)
@@ -200,15 +249,7 @@ def render_progress(
     )
     st.altair_chart(topic_chart, use_container_width=True)
 
-    # Paper 1
-    # — Paper 1 section %
-    s1 = scores_p1.copy()
-    s1["Date"] = pd.to_datetime(s1["Date"])
-    s1 = s1.sort_values("Date")
-    # compute section‐% on the fly
-    s1["A1_pct"] = s1["A1_raw"] / s1["A1_max"] * 100
-    s1["A2_pct"] = s1["A2_raw"] / s1["A2_max"] * 100
-    s1["B_pct"]  = s1["B_raw"]  / s1["B_max"]  * 100
+    
 
     st.subheader("Paper 1: Section % Over Time")
     st.line_chart(
@@ -226,14 +267,7 @@ def render_progress(
         s1.set_index("Date")[["Total_pct","MA5"]],
         use_container_width=True
     )
-
-    # — Paper 2 section %
-    s2 = scores_p2.copy()
-    s2["Date"] = pd.to_datetime(s2["Date"])
-    s2 = s2.sort_values("Date")
-    s2["A_pct"] = s2["A_raw"] / s2["A_max"] * 100
-    s2["B_pct"] = s2["B_raw"] / s2["B_max"] * 100
-
+    
     st.subheader("Paper 2: Section % Over Time")
     st.line_chart(
         s2.set_index("Date")[["A_pct","B_pct"]],

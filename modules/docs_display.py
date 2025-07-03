@@ -17,7 +17,7 @@ def render(role, cfg):
             append_record(
               cfg["gsheet_id"],
               "feedback",
-              [datetime.now().isoformat(), fb.name, file_link, comment]
+              [datetime.now().strftime("%m/%d/%Y"), fb.name, file_link, comment]
             )
             st.success("Feedback recorded.")
 
