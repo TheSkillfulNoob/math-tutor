@@ -1,8 +1,24 @@
 import streamlit as st
 from google_utils import fetch_records, append_record
 from datetime import datetime
+import pandas as pd
 
-def render(role, cfg):
+def show_lessons_summary(lessons_df: pd.DataFrame, feedback_df: pd.DataFrame):
+    """Tab: two-column lessons & summary."""
+    st.header("📝 Lessons & Key Points / Summary")
+    for _, r in lessons_df.sort_values("Date", ascending=False).iterrows():
+        col1, col2 = st.columns([0.4, 0.6])
+        with col1:
+            st.subheader(f"{r['Date']}")
+            st.markdown(f"**{r['Topic']}**")
+            st.write(r["Summary"])
+        with col2:
+            st.subheader("Resources/ Reminders")
+            st.markdown("TODO implement: Slides and Exercises")
+            st.write(r["Feedback"])
+        st.markdown("---")
+
+def show_feedback(role, cfg):
     st.header("Official Documents & Feedback")
 
     # ——— teacher view: upload a PDF and push metadata to “feedback” sheet ——
@@ -29,3 +45,17 @@ def render(role, cfg):
           f"[View]({row['link']})  \n"
           f"> {row['comment']}"
         )
+
+def render_handouts(
+    role, cfg,
+    lessons_df: pd.DataFrame,
+    summary_df: pd.DataFrame
+    ):
+    tabs = st.tabs([
+        "📋 Official Info and Other Handouts",
+        "📝 Lessons & Summary"
+    ])
+    with tabs[0]:
+        show_feedback(role, cfg)
+    with tabs[1]:
+        show_lessons_summary(lessons_df, summary_df)

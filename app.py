@@ -28,8 +28,6 @@ with tab2:
         df_topics,
         df_scores1,
         df_scores2,
-        df_lessons,
-        df_feedback
     )
 with tab3:
-    docs_display.render(role, cfg)
+    docs_display.render_handouts_wrapper(role, cfg, df_lessons, df_feedback)
