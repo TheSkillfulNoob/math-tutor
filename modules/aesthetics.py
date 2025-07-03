@@ -240,7 +240,7 @@ def render_progress(
         value_name="Pct"
     )
 
-    s2 = scores_p1.copy()
+    s2 = scores_p2.copy()
     s2["A_pct"] = s2["A_raw"] / s2["A_max"] * 100
     s2["B_pct"] = s2["B_raw"]  / s2["B_max"]  * 100
 
