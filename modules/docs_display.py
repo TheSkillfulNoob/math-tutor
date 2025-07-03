@@ -44,7 +44,7 @@ def show_feedback(role, cfg):
                     cfg["gsheet_id"],
                     "feedback",
                     [
-                        datetime.now().strftime("%Y-%m-%d"),
+                        datetime.now().strftime("%m/%d/%Y"),
                         fb.name,       # file_name
                         file_link,     # link
                         note           # comment
@@ -81,7 +81,7 @@ def show_lessons_upload(role, cfg):
                     cfg["gsheet_id"],
                     "lessons",
                     [
-                        d.strftime("%Y-%m-%d"),
+                        d.strftime("%m/%d/%Y"),
                         topic,
                         summary,
                         fbk
@@ -106,8 +106,7 @@ def render_handouts(role, cfg):
         
     with tabs[0]:
         df_ls = fetch_records(cfg["gsheet_id"], "lessons")
-        df_fb = fetch_records(cfg["gsheet_id"], "feedback")
-        show_lessons_summary(df_ls, df_fb)
+        show_lessons_summary(df_ls)
     with tabs[1]:
         show_feedback(role, cfg)
     
