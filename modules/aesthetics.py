@@ -200,40 +200,35 @@ def render_progress(
     )
     st.altair_chart(topic_chart, use_container_width=True)
 
+    # Paper 1
+    st.subheader("Paper 1: Section % Over Time")
+    s1 = scores_p1.copy()
+    s1["Date"] = pd.to_datetime(s1["Date"])
+    s1 = s1.sort_values("Date")
+    # columns are now A1_pct, A2_pct, B_pct
+    s1_line = s1.set_index("Date")[["A1_pct","A2_pct","B_pct"]]
+    st.line_chart(s1_line, use_container_width=True)
 
-    # ── 2) Paper 1 ──
-    scores_p1 = scores_p1.copy()
-    scores_p1["Date"] = pd.to_datetime(scores_p1["Date"])
-    scores_p1 = scores_p1.sort_values("Date")
-
-    st.subheader("Paper 1: Section Scores Over Time")
+    st.subheader("Paper 1: Total % + 5-exam MA")
+    s1["MA5"] = s1["Total_pct"].rolling(5, min_periods=1).mean()
     st.line_chart(
-        scores_p1.set_index("Date")[["A1","A2","B"]],
+        s1.set_index("Date")[["Total_pct","MA5"]],
         use_container_width=True
     )
 
-    st.subheader("Paper 1: Total Score + 5-Exam MA")
-    scores_p1["MA5"] = scores_p1["Total"].rolling(5, min_periods=1).mean()
+    # Paper 2
+    st.subheader("Paper 2: Section % Over Time")
+    s2 = scores_p2.copy()
+    s2["Date"] = pd.to_datetime(s2["Date"])
+    s2 = s2.sort_values("Date")
     st.line_chart(
-        scores_p1.set_index("Date")[["Total","MA5"]],
+        s2.set_index("Date")[["A_pct","B_pct"]],
         use_container_width=True
     )
 
-
-    # ── 3) Paper 2 ──
-    scores_p2 = scores_p2.copy()
-    scores_p2["Date"] = pd.to_datetime(scores_p2["Date"])
-    scores_p2 = scores_p2.sort_values("Date")
-
-    st.subheader("Paper 2: Section Scores Over Time")
+    st.subheader("Paper 2: Total % + 5-exam MA")
+    s2["MA5"] = s2["Total_pct"].rolling(5, min_periods=1).mean()
     st.line_chart(
-        scores_p2.set_index("Date")[["A","B"]],
-        use_container_width=True
-    )
-
-    st.subheader("Paper 2: Total Score + 5-Exam MA")
-    scores_p2["MA5"] = scores_p2["Total"].rolling(5, min_periods=1).mean()
-    st.line_chart(
-        scores_p2.set_index("Date")[["Total","MA5"]],
+        s2.set_index("Date")[["Total_pct","MA5"]],
         use_container_width=True
     )

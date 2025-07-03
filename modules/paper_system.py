@@ -1,4 +1,5 @@
 import streamlit as st
+import re
 import pandas as pd
 import gspread
 from google.oauth2.service_account import Credentials
@@ -64,57 +65,111 @@ def render(role: str, config: dict):
     if role.lower() == "tutee":
         _show_available_papers(config)
 
+def _parse_mark(mark_str: str, hard_max: int):
+    """
+    Parse “obtained/maximum” → floats (obt, pct).  
+    Returns (obt, pct, None) on success; (None, None, error_msg) on failure.
+    """
+    if not isinstance(mark_str, str) or "/" not in mark_str:
+        return None, None, "❌ Format must be “obtained/maximum”"
+    parts = mark_str.split("/")
+    if len(parts) != 2:
+        return None, None, "❌ Use exactly one slash: “21/31”"
+    try:
+        obt = int(parts[0].strip())
+        mx  = int(parts[1].strip())
+    except ValueError:
+        return None, None, "❌ Both parts must be integers"
+    if mx > hard_max:
+        return None, None, f"❌ Maximum cannot exceed {hard_max}"
+    if obt < 0 or obt > mx:
+        return None, None, f"❌ Obtained must be between 0 and {mx}"
+    pct = obt / mx * 100
+    return obt, pct, None
+
 def _add_p1_score(config):
-    st.markdown("### 📝 Tutor: Add Paper 1 Score")
+    st.markdown("### 📝 Tutor: Add Paper 1 Score (format “obtained/maximum”)")
     with st.form("p1_form"):
-        cols = st.columns(5)
-        with cols[0]:
+        c_date, c_set, c_a1, c_a2, c_b = st.columns(5)
+        with c_date:
             d = st.date_input("Date")
-        with cols[1]:
+        with c_set:
             set_name = st.text_input("Set Name")
-        with cols[2]:
-            a1 = st.number_input("A1 (max 35)", min_value=0, max_value=35, step=1)
-        with cols[3]:
-            a2 = st.number_input("A2 (max 35)", min_value=0, max_value=35, step=1)
-        with cols[4]:
-            b  = st.number_input("B  (max 35)", min_value=0, max_value=35, step=1)
+        with c_a1:
+            a1_str = st.text_input("A1 (max 35)", placeholder="e.g. 28/35")
+        with c_a2:
+            a2_str = st.text_input("A2 (max 35)", placeholder="e.g. 30/35")
+        with c_b:
+            b_str  = st.text_input("B  (max 35)", placeholder="e.g. 25/35")
+
         comments = st.text_area("Comments")
+
         if st.form_submit_button("Submit P1"):
-            total = a1 + a2 + b
-            ws = init_worksheet("scores_p1")
+            # parse & validate each
+            a1_obt, a1_pct, err1 = _parse_mark(a1_str, 35)
+            a2_obt, a2_pct, err2 = _parse_mark(a2_str, 35)
+            b_obt,  b_pct,  err3 = _parse_mark(b_str,  35)
+            errs = [e for e in (err1,err2,err3) if e]
+            if errs:
+                for e in errs:
+                    st.error(e)
+                return
+
+            # compute overall percentage
+            total_obt = a1_obt + a2_obt + b_obt
+            total_max = 35*3
+            total_pct = total_obt / total_max * 100
+
+            ws = init_worksheet(config, "scores_p1")
             ws.append_row([
-                d.strftime("%m/%d/%Y"),
+                d.isoformat(),
                 set_name,
-                a1, a2, b,
-                total,
+                f"{a1_obt}/{35}", round(a1_pct,1),
+                f"{a2_obt}/{35}", round(a2_pct,1),
+                f"{b_obt}/{35}",  round(b_pct,1),
+                round(total_pct,1),
                 comments or ""
             ])
-            st.success("✅ Paper 1 score recorded.")
+            st.success("✅ Paper 1 percentage recorded.")
 
 def _add_p2_score(config):
-    st.markdown("### 📝 Tutor: Add Paper 2 Score")
+    st.markdown("### 📝 Tutor: Add Paper 2 Score (format “obtained/maximum”)")
     with st.form("p2_form"):
-        cols = st.columns(4)
-        with cols[0]:
+        c_date, c_set, c_a, c_b = st.columns(4)
+        with c_date:
             d = st.date_input("Date")
-        with cols[1]:
+        with c_set:
             set_name = st.text_input("Set Name")
-        with cols[2]:
-            a = st.number_input("A (max 30)", min_value=0, max_value=30, step=1)
-        with cols[3]:
-            b = st.number_input("B (max 15)", min_value=0, max_value=15, step=1)
+        with c_a:
+            a_str = st.text_input("A (max 30)", placeholder="e.g. 24/30")
+        with c_b:
+            b_str = st.text_input("B (max 15)", placeholder="e.g. 12/15")
+
         comments = st.text_area("Comments")
+
         if st.form_submit_button("Submit P2"):
-            total = a + b
-            ws = init_worksheet("scores_p2")
+            a_obt, a_pct, err1 = _parse_mark(a_str, 30)
+            b_obt, b_pct, err2 = _parse_mark(b_str, 15)
+            errs = [e for e in (err1,err2) if e]
+            if errs:
+                for e in errs:
+                    st.error(e)
+                return
+
+            total_obt = a_obt + b_obt
+            total_max = 30 + 15
+            total_pct = total_obt / total_max * 100
+
+            ws = init_worksheet(config, "scores_p2")
             ws.append_row([
-                d.strftime("%m/%d/%Y"),
+                d.isoformat(),
                 set_name,
-                a, b,
-                total,
+                f"{a_obt}/{30}", round(a_pct,1),
+                f"{b_obt}/{15}", round(b_pct,1),
+                round(total_pct,1),
                 comments or ""
             ])
-            st.success("✅ Paper 2 score recorded.")
+            st.success("✅ Paper 2 percentage recorded.")
 
 def _show_available_papers(config):
     # 1) pull the control sheet
