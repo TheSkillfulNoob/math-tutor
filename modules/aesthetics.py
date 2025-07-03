@@ -173,14 +173,14 @@ def show_topic_mastery(topics_df: pd.DataFrame):
         .groupby(["core_topic","strand"], as_index=False)
         .rate.mean()
     )
-    st.info(avg)
+    # st.info(avg)
     order = [TOPIC_MAP[i] for i in sorted(TOPIC_MAP)]
 
     chart = (
         alt.Chart(avg)
            .mark_bar(cornerRadiusTopLeft=3, cornerRadiusTopRight=3)
            .encode(
-             x=alt.X("core_topic:N",
+             x=alt.X("chapter:Q",
                      sort=order,
                      axis=alt.Axis(labelAngle=-45)),
              y=alt.Y("rate:Q",
@@ -229,7 +229,7 @@ def show_topic_mastery(topics_df: pd.DataFrame):
                 # with st.expander(label, expanded=False):
                     # list each sub-item and its rate
                 subs = topics_df[topics_df["chapter"] == idx]
-                text = ""
+                text = []
                 bullet = f"<span style='color:{color}'>&#9679;</span>"
                 for _, sub in subs.iterrows():
                     text.append(f"{bullet} {sub['topic']}: {sub['rate']}/ 7")

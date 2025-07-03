@@ -27,7 +27,7 @@ with tab2:
     aesthetics.render_progress(
         df_topics,
         df_scores1,
-        df_scores2,
+        df_scores2
     )
 with tab3:
     docs_display.render_handouts_wrapper(role, cfg, df_lessons, df_feedback)
