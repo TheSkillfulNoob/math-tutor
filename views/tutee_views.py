@@ -20,5 +20,5 @@ def tab_latest_results(role, cfg,
 
 TUTEE_TABS = [
     ("✍️ Mock Papers",    tab_mock_papers),
-    ("📋 Latest Results", tab_latest_results),
+    ("📈 Latest Results", tab_latest_results),
 ]
