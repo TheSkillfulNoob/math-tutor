@@ -33,7 +33,7 @@ with tabs[0]:
 # Tab 2: everybody
 with tabs[1]:
     tab_topic_mastery(df_topics)
-    tab_lessons_and_handouts(role, cfg, df_lessons, df_feedback)
+    tab_lessons_and_handouts(role, cfg)
 
 # Tab 3: tutor-only
 with tabs[2]:
