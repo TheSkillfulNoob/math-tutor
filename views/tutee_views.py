@@ -10,7 +10,11 @@ def tab_mock_papers(role, cfg, *_):
     else:
         st.info("Mock-papers only for students.")
 
-def tab_latest_results(role, cfg, scores_p1, scores_p2, *_):
+def tab_latest_results(role, cfg,
+                       _topics_df,    # catch the topics param
+                       scores_p1,
+                       scores_p2,
+                       *_):
     """📋 Latest Results (tutee only)"""
     if role.lower() == "tutee":
         st.header("📋 Latest Results")
