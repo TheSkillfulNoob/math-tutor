@@ -57,7 +57,7 @@ def show_feedback(role, cfg):
     for _, row in df_fb.iterrows():
         st.info(
             f"**{row['file_name']}** | \n"
-            f"[View]({row['link']})  \n"
+            f"[Click to Download]({row['link']})  \n"
             f"> {row['comment']}"
         )
 
