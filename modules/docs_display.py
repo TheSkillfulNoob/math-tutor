@@ -15,7 +15,7 @@ def show_lessons(role, cfg):
                 topic     = st.text_input("Topic")
             with col_date_content[1]:
                 summary   = st.text_area("Summary of Key Points")
-            
+            st.markdown("""---""")
             col_handout_content = st.columns([0.5, 0.5])
             with col_handout_content[0]:
                 lec_notes = st.text_area("Lecture Notes Description")
@@ -64,14 +64,12 @@ def show_lessons(role, cfg):
         col1, col2 = st.columns([0.5, 0.5])
         with col1:
             st.subheader(f"{row['Date']} — {row['Topic']}")
-            st.write(row["Summary"])
+            st.info(row["Summary"])
         with col2:
-            st.markdown("**Lecture Notes**")
+            st.markdown(f"**Lecture Notes**: [Download Lecture PDF]({row['Lec_link']})")
             st.write(row["Lec_notes"])
-            st.markdown(f"[Download Lecture PDF]({row['Lec_link']})")
-            st.markdown("**Exercise**")
+            st.markdown(f"**Exercise**: [Download Exercise PDF]({row['Ex_link']})")
             st.write(row["Ex_notes"])
-            st.markdown(f"[Download Exercise PDF]({row['Ex_link']})")
         st.markdown("---")
 
 
