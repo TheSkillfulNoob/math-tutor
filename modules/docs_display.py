@@ -9,13 +9,20 @@ def show_lessons(role, cfg):
     # ─── Tutor upload form ───
     if role == "Tutor":
         with st.form("lessons_form"):
-            d         = st.date_input("Lesson Date")
-            topic     = st.text_input("Topic")
-            summary   = st.text_area("Summary of Key Points")
-            lec_notes = st.text_area("Lecture Notes Description")
-            lec_file  = st.file_uploader("Upload Lecture PDF", type="pdf")
-            ex_notes  = st.text_area("Exercise Notes Description")
-            ex_file   = st.file_uploader("Upload Exercise PDF", type="pdf")
+            col_date_content = st.columns([0.3, 0.7])
+            with col_date_content[0]:
+                d         = st.date_input("Lesson Date")
+                topic     = st.text_input("Topic")
+            with col_date_content[1]:
+                summary   = st.text_area("Summary of Key Points")
+            
+            col_handout_content = st.columns([0.5, 0.5])
+            with col_handout_content[0]:
+                lec_notes = st.text_area("Lecture Notes Description")
+                lec_file  = st.file_uploader("Upload Lecture PDF", type="pdf")
+            with col_handout_content[1]:
+                ex_notes  = st.text_area("Exercise Notes Description")
+                ex_file   = st.file_uploader("Upload Exercise PDF", type="pdf")
             confirm   = st.form_submit_button("Confirm upload")
 
         if confirm:
