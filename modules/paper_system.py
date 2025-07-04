@@ -169,6 +169,7 @@ def _add_p2_score(config):
             st.success("✅ Paper 2 percentage recorded.")
 
 def _show_available_papers(config):
+    st.header("✍️ Mock Papers")
     # 1) pull the control sheet
     df = fetch_records("Math-tutor", "paper-control")
     df["begin-date"] = pd.to_datetime(df["begin-date"])
