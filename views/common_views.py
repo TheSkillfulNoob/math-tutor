@@ -7,7 +7,7 @@ def tab_topic_mastery(role, cfg, topics_df, *_):
     st.header("📊 Topic Mastery")
     show_topic_mastery(topics_df)
 
-def tab_lessons_and_handouts(role, cfg, _1, _2, lessons_df, feedback_df):
+def tab_lessons_and_handouts(role, cfg, _1, _2, _3, lessons_df, feedback_df):
     """📚 Lessons & 📋 Non-Lesson Handouts (everyone)"""
     st.header("📚 Lessons & Summary")
     show_lessons(role, cfg)
