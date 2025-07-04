@@ -4,7 +4,7 @@ def configure_page():
     st.set_page_config(
         page_title="HKDSE Math Dashboard", layout="wide"
     )
-    st.title("🎓 Math Tuition Dashboard for Student")
+    st.title("🎓 Math Tuition Dashboard for Anna")
 
 def authenticate():
     # 1) Initialize

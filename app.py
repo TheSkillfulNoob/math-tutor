@@ -1,41 +1,44 @@
-from setup import configure_page, authenticate
+# app.py
 import streamlit as st
-from google_utils    import fetch_records
-from modules         import aesthetics
-from views.tutee_views   import tab_mock_papers, tab_latest_results
-from views.common_views  import tab_topic_mastery, tab_lessons_and_handouts
-from views.tutor_views   import tab_enter_scores, tab_upload_handouts
+from setup import configure_page, authenticate
+from google_utils import fetch_records
+import streamlit as st
+
+from views.tutee_views   import TUTEE_TABS
+from views.common_views  import COMMON_TABS
+from views.tutor_views   import TUTOR_TABS
+from modules import aesthetics
 
 configure_page()
 role = authenticate()
 cfg  = st.secrets["math_tutor"]
 sheet = cfg["gsheet_id"]
 
-# fetch all sheets up front
-df_topics   = fetch_records(sheet,"topics-breakdown")
-df_quotes   = fetch_records(sheet,"quotes")
-df_s1       = fetch_records(sheet,"scores_p1")
-df_s2       = fetch_records(sheet,"scores_p2")
-df_lessons  = fetch_records(sheet,"lessons")
-df_feedback = fetch_records(sheet,"feedback")
+# Fetch everything you need
+df_topics   = fetch_records(sheet, "topics-breakdown")
+df_quotes   = fetch_records(sheet, "quotes")
+df_s1       = fetch_records(sheet, "scores_p1")
+df_s2       = fetch_records(sheet, "scores_p2")
+df_lessons  = fetch_records(sheet, "lessons")
+df_feedback = fetch_records(sheet, "feedback")
 
-# top-of-page box
+# Top‐of‐page aesthetic box
 aesthetics.show_weekly_quote(df_quotes, df_topics)
 
-# now the three large tabs
-tabs = st.tabs(["✍️ Mock Papers","💯 Progress","⚙️ Teacher"])
+# Build a single ordered list of tabs depending on role
+tabs_to_show = []
+if role.lower() == "tutee":
+    tabs_to_show += TUTEE_TABS
+tabs_to_show += COMMON_TABS
+if role.lower() == "tutor":
+    tabs_to_show += TUTOR_TABS
 
-# Tab 1: Tutee only
-with tabs[0]:
-    tab_mock_papers(role, cfg)
-    tab_latest_results(df_s1, df_s2)
+# Create the Streamlit tabs
+labels = [label for label, _ in tabs_to_show]
+sts    = st.tabs(labels)
 
-# Tab 2: everybody
-with tabs[1]:
-    tab_topic_mastery(df_topics)
-    tab_lessons_and_handouts(role, cfg)
-
-# Tab 3: tutor-only
-with tabs[2]:
-    tab_enter_scores(role, cfg)
-    tab_upload_handouts(role, cfg)
+# Call each render function with the arguments it needs
+for (label, fn), tab in zip(tabs_to_show, sts):
+    with tab:
+        # fn signature is (role,cfg,df_topics,df_s1,df_s2,df_lessons,df_feedback)
+        fn(role, cfg, df_topics, df_s1, df_s2, df_lessons, df_feedback)
