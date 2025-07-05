@@ -78,7 +78,7 @@ def show_feedback(role, cfg):
     st.header("📋 Other Handouts & Feedback")
 
     if role == "Tutor":
-        with st.form("feedback_form"):
+        with st.form("other_handouts_form"):
             fb      = st.file_uploader("Upload feedback slides (PDF)", type="pdf")
             note    = st.text_area("Enter any notes for the student")
             confirm = st.form_submit_button("Confirm upload")
