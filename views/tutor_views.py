@@ -18,7 +18,6 @@ def tab_upload_lessons(role, cfg, *_):
         st.subheader("📚 Current Lessons")
         display_lessons(cfg)
         st.markdown("---")
-        show_feedback(role, cfg)
 
 TUTOR_TABS = [
     ("✍️ Enter Scores", tab_enter_scores),
