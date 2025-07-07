@@ -15,4 +15,6 @@ def tab_lessons_and_handouts(role, cfg, *_):
 
 COMMON_TABS = [
     ("📚 Lessons & Handouts", tab_lessons_and_handouts),
+    # I missed this line smh
+    ("📊 Topic Mastery", tab_topic_mastery), 
 ]
