@@ -101,7 +101,7 @@ def show_weekly_quote(quotes_df: pd.DataFrame, topics_df: pd.DataFrame):
     exam_dates = {
         "First Compulsory (9 Apr '26)": date(2026, 4, 9),
         "Math Exam (13 Apr '26)":    date(2026, 4, 13),
-        "Last Subject (Bio, 20 Apr '26)": date(2026, 4, 20),
+        "Last Subject (Econ, 4 May '26)": date(2026, 5, 4),
     }
     lines = []
     for label, dt in exam_dates.items():

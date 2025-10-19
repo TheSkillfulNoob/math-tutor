@@ -4,7 +4,7 @@ def configure_page():
     st.set_page_config(
         page_title="HKDSE Math Dashboard", layout="wide"
     )
-    st.title("🎓 Math Tuition Dashboard for Anna")
+    st.title("🎓 Math Dashboard for My Rene ❤️")
 
 def authenticate():
     # 1) Initialize
@@ -21,11 +21,11 @@ def authenticate():
     if pw:
         if pw == st.secrets["math_tutor"]["tutor_pw"]:
             st.session_state.role = "Tutor"
-            st.success("Access granted (Tutor)!")
+            st.success("Access granted (Andrew)!")
             st.rerun()
         elif pw == st.secrets["math_tutor"]["tutee_pw"]:
             st.session_state.role = "Tutee"
-            st.success("Access granted (Anna)!")
+            st.success("Access granted (Rene)!")
             st.rerun()
         else:
             st.error("Incorrect password.") #st.sidebar.error?
