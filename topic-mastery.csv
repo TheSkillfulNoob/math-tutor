@@ -24,8 +24,8 @@ chapter,index,tag,topic,rate
 4,4C,polygons,Polygons,6
 4,4D,pyth,Pythagorean Thm. and Its Converse,6
 4,4E,cong-sim,Congruence and Similarity,6
-4,4F,circ-chord,Circles (I) - Angles and Chords,6
-4,4G,circ-tangent,Circles (II) - Tangents,6
+4,4F,circ-chord,Circles (I) - Angles and Chords,5
+4,4G,circ-tangent,Circles (II) - Tangents,4
 4,4H,geom-fourctr,Four triangle centres in Geometry,6
 5,5A,trig-right-angle,Trigo ratios in right-angled triangles,6
 5,5B,trig-quad-i,Trigonometric Identities (I),6
@@ -39,9 +39,9 @@ chapter,index,tag,topic,rate
 6,6D,3dtrig,3D Trigonometry,6
 7,7A,rect-figures,Mensuration in Rectilinear Figures,6
 7,7B,circ-segment,"Circles, Sectors and Segments",6
-7,7C,sa-volume,Surface Areas and Volumes of Solids,6
-7,7D,ratio-2d,Ratio of Areas in Rectilinear Figures,6
-7,7E,ratio-3d,Ratios of Volumes of Solids,6
+7,7C,sa-volume,Surface Areas and Volumes of Solids,3
+7,7D,ratio-2d,Ratio of Areas in Rectilinear Figures,5
+7,7E,ratio-3d,Ratios of Volumes of Solids,3
 8,8A,solve-discriminant,Quad equation and root nature,6
 8,8B,sum-product,Sum and product of roots,6
 8,8C,quad-reducible,Equations Redicible to Quadratics,6
@@ -50,10 +50,10 @@ chapter,index,tag,topic,rate
 9,9A,pt-transf,Transformation in rect. plane,6
 9,9B,pt-dist-slope,"Points, distances and slopes",6
 9,9C,eq-st-line,Equation of straight lines,6
-9,9D,eq-circles,Equation of Circles,6
+9,9D,eq-circles,Equation of Circles,4
 9,9E,line-circle-intersect,Intersection of Circles and St. Lines,6
-9,9F,locus,Locus,6
-9,9G,4ctr-cogeom,Four centres of triangles in co-geom,6
+9,9F,locus,Locus,4
+9,9G,4ctr-cogeom,Four centres of triangles in co-geom,3
 10,10A,general-func,General Functions,6
 10,10B,line-graph,Straight Line Graphs,6
 10,10C,quad-graph,Quadratic Graphs,6
