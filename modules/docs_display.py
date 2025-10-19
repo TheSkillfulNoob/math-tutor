@@ -11,9 +11,9 @@ def display_lessons(cfg):
             st.subheader(f"{row['Date']} — {row['Topic']}")
             st.write(row["Summary"])
         with col2:
-            st.markdown("**Lecture Notes**")
-            st.write(row["Lec_notes"])
-            st.markdown(f"[Download Lecture PDF]({row['Lec_link']})")
+            #st.markdown("**Lecture Notes**")
+            #st.write(row["Lec_notes"])
+            #st.markdown(f"[Download Lecture PDF]({row['Lec_link']})")
             st.markdown("**Exercise**")
             st.write(row["Ex_notes"])
             st.markdown(f"[Download Exercise PDF]({row['Ex_link']})")
@@ -27,8 +27,8 @@ def upload_lessons(role, cfg):
         d         = st.date_input("Lesson Date")
         topic     = st.text_input("Topic")
         summary   = st.text_area("Summary of Key Points")
-        lec_notes = st.text_area("Lecture Notes Description")
-        lec_file  = st.file_uploader("Upload Lecture PDF", type="pdf", key="lec_up")
+        #lec_notes = st.text_area("Lecture Notes Description")
+        #lec_file  = st.file_uploader("Upload Lecture PDF", type="pdf", key="lec_up")
         ex_notes  = st.text_area("Exercise Notes Description")
         ex_file   = st.file_uploader("Upload Exercise PDF", type="pdf", key="ex_up")
         submit    = st.form_submit_button("Confirm upload")
@@ -37,7 +37,7 @@ def upload_lessons(role, cfg):
         errors = []
         if not topic:     errors.append("Topic is required.")
         if not summary:   errors.append("Summary is required.")
-        if not lec_file:  errors.append("Lecture PDF is required.")
+        #if not lec_file:  errors.append("Lecture PDF is required.")
         if not ex_file:   errors.append("Exercise PDF is required.")
         if errors:
             for e in errors:
@@ -46,7 +46,7 @@ def upload_lessons(role, cfg):
 
         # upload both files
         folder_id = cfg["slides_lessons_folder_id"]
-        lec_id    = upload_file_to_folder(folder_id, lec_file)
+        #lec_id    = upload_file_to_folder(folder_id, lec_file)
         ex_id     = upload_file_to_folder(folder_id, ex_file)
         lec_link  = f"https://drive.google.com/uc?export=download&id={lec_id}"
         ex_link   = f"https://drive.google.com/uc?export=download&id={ex_id}"
@@ -58,13 +58,13 @@ def upload_lessons(role, cfg):
                 d.strftime("%Y-%m-%d"),
                 topic,
                 summary,
-                lec_notes,
+                #lec_notes,
                 lec_link,
                 ex_notes,
                 ex_link,
             ]
         )
-        st.success("✅ Lesson & exercise uploaded.")
+        st.success("✅ Exercise uploaded.")
 
 def show_feedback(role, cfg):
     """(Unchanged) feedback form + display."""
@@ -72,7 +72,7 @@ def show_feedback(role, cfg):
     if role.lower() == "tutor":
         with st.form("feedback_form"):
             fb      = st.file_uploader("Upload feedback slides (PDF)", type="pdf")
-            note    = st.text_area("Comments for student")
+            note    = st.text_area("Comments")
             submit  = st.form_submit_button("Confirm upload")
         if submit:
             if not fb or not note:
@@ -99,7 +99,7 @@ def show_feedback(role, cfg):
 
 def render_handouts(role, cfg):
     """Top‐level tab layout for docs & lessons."""
-    tabs = ["📚 Lessons & Resources", "📋 Other Handouts"]
+    tabs = ["📚 Tailored Resources", "📋 Other Handouts"]
     if role == "Tutor":
         tabs.append("✏️ Upload Lesson & Exercise")
 

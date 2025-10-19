@@ -2,8 +2,7 @@
 import streamlit as st
 from setup import configure_page, authenticate
 from google_utils import fetch_records
-import streamlit as st
-
+import pandas as pd
 from views.tutee_views   import TUTEE_TABS
 from views.common_views  import COMMON_TABS
 from views.tutor_views   import TUTOR_TABS
@@ -15,7 +14,9 @@ cfg  = st.secrets["math_tutor"]
 sheet = cfg["gsheet_id"]
 
 # Fetch everything you need
-df_topics   = fetch_records(sheet, "topics-breakdown")
+#df_topics   = fetch_records(sheet, "topics-breakdown")
+df_topics = pd.read_csv("topic-mastery.csv")
+
 df_quotes   = fetch_records(sheet, "quotes")
 df_s1       = fetch_records(sheet, "scores_p1")
 df_s2       = fetch_records(sheet, "scores_p2")
